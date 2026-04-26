@@ -1,0 +1,14 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#0D1117" />
+  <circle cx="224" cy="112" r="178" fill="#C6A969" fill-opacity="0.12" />
+  <circle cx="1000" cy="532" r="228" fill="#8B7355" fill-opacity="0.12" />
+  <rect x="76" y="76" width="1048" height="478" rx="34" fill="#161B22" stroke="#2E3540" />
+  <text x="118" y="198" fill="#C6A969" font-family="Sora, sans-serif" font-size="26">Nikhil Gadhwal</text>
+  <text x="118" y="278" fill="#F5F5F5" font-family="Sora, sans-serif" font-size="60" font-weight="700">Java Backend Developer</text>
+  <text x="118" y="338" fill="#F5F5F5" font-family="Sora, sans-serif" font-size="60" font-weight="700">Microservices | Spring Boot | AWS</text>
+  <text x="118" y="420" fill="#9CA3AF" font-family="Manrope, sans-serif" font-size="28">
+    Scalable financial systems, secure APIs, cloud-native modernization, and enterprise resiliency.
+  </text>
+  <rect x="118" y="468" width="252" height="50" rx="25" fill="#C6A969" />
+  <text x="158" y="500" fill="#0D1117" font-family="Manrope, sans-serif" font-size="22" font-weight="700">4+ years experience</text>
+</svg>
