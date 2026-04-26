@@ -3,7 +3,6 @@ import { Helmet } from "react-helmet-async";
 import AboutSection from "./components/AboutSection";
 import ContactSection from "./components/ContactSection";
 import CredentialsSection from "./components/CredentialsSection";
-import ExperienceSection from "./components/ExperienceSection";
 import Footer from "./components/Footer";
 import Hero from "./components/Hero";
 import Navbar from "./components/Navbar";
@@ -73,7 +72,6 @@ function App() {
         <Hero personal={portfolio.personal} quickStats={portfolio.quickStats} />
         <AboutSection personal={portfolio.personal} focusAreas={portfolio.focusAreas} />
         <SkillsSection skills={portfolio.skills} />
-        <ExperienceSection experience={portfolio.experience} />
         <ProjectsSection projects={portfolio.projects} />
         <CredentialsSection
           certifications={portfolio.certifications}

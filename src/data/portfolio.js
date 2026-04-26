@@ -29,11 +29,11 @@ export const portfolio = {
     linkedin: "https://www.linkedin.com/in/nikhil-gadhwal-1b8688138/",
     github: "",
     summary:
-      "Java Backend Developer with 4+ years of experience building scalable enterprise microservices, secure REST APIs, cloud-native applications, and financial systems.",
+      "Building scalable enterprise backend systems with strong experience across modernization, automation, and cloud-native engineering.",
     expandedSummary:
       "I build reliable backend platforms for enterprise and financial workflows, with strong depth in distributed systems, production support, secure service delivery, and cloud modernization. My work is centered on improving data consistency, reducing operational friction, and keeping high-volume systems resilient in production.",
     availability:
-      "Open to Senior Java Backend, Microservices, Platform Engineering, and Cloud Engineering opportunities across India, global product teams, relocation-friendly roles, and remote-first environments.",
+      "Feel free to connect for backend engineering, cloud architecture, technology discussions, or simply to explore the work I’m building.",
     resumeFile: "/Nikhil_Gadhwal_Java_Backend_Developer.pdf",
     profilePhoto: "/profile-photo.jpg"
   },
@@ -83,7 +83,6 @@ export const portfolio = {
         { name: "Spring Boot", level: 93 },
         { name: "REST APIs", level: 92 },
         { name: "Microservices", level: 90 },
-        { name: "Hibernate", level: 82 },
         { name: "JWT Security", level: 84 }
       ]
     },
@@ -128,131 +127,92 @@ export const portfolio = {
   ],
   experience: {
     company: "Tata Consultancy Services (TCS)",
-    role: "System Engineer / Java Developer",
+    role: "System Engineer",
     duration: "Dec 2021 - Present",
     summary:
       "Delivering backend engineering across secure billing systems, region-specific automation, production support, and microservices modernization for enterprise-scale financial operations.",
     highlights: [
-      "Migrated 9 production microservices from Java 8 to Java 21, improving long-term maintainability, security posture, and performance stability.",
-      "Built invoice transfer functionality that reduced manual adjustment work by 50-60% and improved invoice-level data consistency.",
-      "Implemented EMEA regional enhancements with customer care stakeholders, improving operational efficiency by 60-70%.",
-      "Designed APAC No-Show automation using AWS SQS and batch-driven processing for asynchronous financial correction flows.",
-      "Built secure backend services supporting global billing workflows and cross-region service communication.",
-      "Owned production issue resolution, root cause analysis, and service reliability improvements for critical backend flows.",
-      "Contributed to architecture-level backend decisions, solution design, testing strategy, and release readiness."
-    ],
-    milestones: [
-      {
-        id: "2021",
-        label: "Joined TCS",
-        heading: "Built core ownership in enterprise backend delivery",
-        detail:
-          "Started owning Java service delivery, requirement breakdowns, and testing support in a production-sensitive enterprise environment."
-      },
-      {
-        id: "2023",
-        label: "Automation",
-        heading: "Expanded into region-specific financial workflow automation",
-        detail:
-          "Delivered invoice adjustments, batch-driven correction flows, and operational improvements across APAC and EMEA business processes."
-      },
-      {
-        id: "2025",
-        label: "Modernization",
-        heading: "Drove modernization and higher-stakes architecture work",
-        detail:
-          "Led Java 21 migrations, resolved token compatibility challenges, and helped shape resilient service-level implementation decisions."
-      }
+      "Enterprise financial systems",
+      "Production-critical backend ownership",
+      "Regional workflow engineering",
+      "Modernization initiatives"
     ]
   },
   projects: [
     {
-      title: "Enterprise Invoice Adjustment Platform",
-      tagline: "Enterprise microservice for financial correction workflows and stronger data consistency.",
-      shortSummary:
-        "Built an enterprise-grade Spring Boot microservice for secure financial adjustment and transfer workflows at enterprise scale.",
-      problem:
-        "Billing teams needed a secure and reliable way to adjust invoice-level financial records across regions without repeated manual intervention.",
+      title: "Enabled Transfer Functionality",
+      brief: "Built invoice-to-invoice transfer capability to streamline financial correction workflows while ensuring transactional consistency.",
+      reason:
+        "Manual correction required multiple disconnected operations, increasing operational effort and risk of partial failures.",
       solution:
-        "Built and extended a Spring Boot microservice that orchestrated invoice adjustment and transfer workflows through validated REST APIs, service orchestration, and region-aware business logic.",
-      stack: ["Java", "Spring Boot", "REST APIs", "PostgreSQL", "JWT", "Jenkins"],
-      impact: [
-        "Reduced manual invoice operations by 50-60%",
-        "Improved adjustment traceability and consistency across invoices",
-        "Created a reusable service foundation for future regional flows"
+        "Designed unified transfer processing within existing adjustment architecture, enabling debit and credit actions in a single transactional flow with rollback protection.",
+      benefits: [
+        "Reduced manual operational effort by 50–60%",
+        "Improved financial data consistency",
+        "Eliminated partial update failures",
+        "Enhanced maintainability through logic reuse"
       ],
-      impactLine: "Reduced manual effort by 50-60% while improving invoice consistency.",
-      scale:
-        "Handled enterprise billing workflows spanning global invoice operations, multi-team dependencies, and region-aware business rules.",
-      security:
-        "Designed secure API interactions, backend validation, and controlled financial state transitions for audit-sensitive workflows.",
-      architecture: ["Billing Request", "Adjustment API", "Business Rules Engine", "Invoice Ledger Update", "Operations Reporting"]
+      stack: ["Java", "Spring Boot", "PostgreSQL", "REST APIs", "Microservices"]
     },
     {
-      title: "Regional Financial Workflow Automation",
-      tagline: "Asynchronous batch and queue-based automation for financial correction workflows.",
-      shortSummary:
-        "Designed an async batch workflow for regional financial correction handling with queue-based resilience and lower manual effort.",
-      problem:
-        "APAC no-show corrections were operationally heavy, time-sensitive, and difficult to process reliably with manual handling alone.",
+      title: "Automated No-Show Adjustment",
+      brief: "Automated reservation no-show financial adjustment workflows using asynchronous batch and queue-based processing.",
+      reason:
+        "Manual no-show correction processes were resource-intensive and lacked scalability.",
       solution:
-        "Designed a Spring Batch and AWS SQS-backed asynchronous workflow to process correction events, decouple batch execution, and improve operational resilience.",
-      stack: ["Java", "Spring Batch", "AWS SQS", "Microservices", "PostgreSQL"],
-      impact: [
-        "Reduced manual financial correction effort",
-        "Improved batch reliability and asynchronous fault isolation",
-        "Enabled cleaner event-driven handling for region-specific correction logic"
+        "Developed daily batch processing integrated with asynchronous queue architecture to identify eligible records, trigger adjustments, and ensure retry-safe distributed processing.",
+      benefits: [
+        "Reduced manual intervention significantly",
+        "Improved scalability for regional workloads",
+        "Increased processing reliability",
+        "Enabled fault-tolerant automation"
       ],
-      impactLine: "Improved processing reliability and reduced manual correction effort.",
-      scale:
-        "Built for high-volume batch correction scenarios across regional finance workflows with resilient queue-driven processing.",
-      security:
-        "Protected message-driven processing through controlled consumers, validation layers, and safer failure handling around financial state updates.",
-      architecture: ["No-Show Trigger", "Batch Scheduler", "SQS Queue", "Correction Processor", "Billing Reconciliation"]
+      stack: ["Java", "Spring Batch", "AWS SQS", "PostgreSQL", "Microservices"]
     },
     {
       title: "Java 21 Migration Program",
-      tagline: "Legacy-to-modernization initiative across 9 production microservices.",
-      shortSummary:
-        "Migrated 9 production microservices from Java 8 to Java 21 to improve supportability, security, and long-term platform readiness.",
-      problem:
-        "Critical production services on Java 8 needed modernization to stay supportable, secure, and compatible with future platform requirements.",
+      brief: "Large-scale migration of production microservices to modern Java LTS.",
+      reason:
+        "Legacy services required modernization for performance, security, and long-term maintainability.",
       solution:
-        "Migrated 9 production microservices from Java 8 to Java 21, updated deprecated patterns, resolved token compatibility issues, and improved environment readiness for long-term LTS support.",
-      stack: ["Java 21", "Spring Boot", "Docker", "Jenkins", "CI/CD"],
-      impact: [
-        "Improved maintainability and long-term platform support",
-        "Strengthened security posture with newer runtime support",
-        "Reduced legacy risk across critical backend services"
+        "Led staged migration of production services, resolving dependency conflicts, backward compatibility issues, security upgrades, and cross-version interoperability challenges.",
+      benefits: [
+        "Improved system stability",
+        "Enhanced security posture",
+        "Better performance and memory efficiency",
+        "Future-ready architecture"
       ],
-      impactLine: "Modernized 9 production services with stronger security and maintainability.",
-      scale:
-        "Spanned 9 production services with cross-service dependencies, deployment coordination, and release validation requirements.",
-      security:
-        "Addressed runtime compatibility and token-related issues carefully to preserve secure authentication behavior during migration.",
-      architecture: ["Legacy Service", "Dependency Audit", "Code Refactor", "Compatibility Validation", "Production Rollout"]
+      stack: ["Java 21", "Spring Boot", "JWT", "Jenkins", "Docker"]
     },
     {
-      title: "Regional Business Rule Automation Enhancement",
-      tagline: "Business-rule automation for region-specific financial and operational workflows.",
-      shortSummary:
-        "Delivered backend enhancements for region-specific workflows with cleaner business rule handling and lower operational friction.",
-      problem:
-        "EMEA operations required backend changes tailored to regional rules and support workflows, with a strong need to reduce repetitive manual work.",
+      title: "Regional Enhancement Implementation",
+      brief: "Implemented modular regional business rule architecture to support scalable multi-region financial operations.",
+      reason:
+        "Expanding regional requirements increased complexity in business validations and tax/revenue rules.",
       solution:
-        "Collaborated with regional stakeholders to design and deliver targeted backend enhancements supporting region-aware rules, automated flow handling, and more dependable processing.",
-      stack: ["Java", "Spring Boot", "Microservices", "PostgreSQL", "Jira"],
-      impact: [
-        "Improved operational efficiency by 60-70%",
-        "Reduced turnaround friction for EMEA support scenarios",
-        "Improved alignment between business rules and service behavior"
+        "Separated region-specific logic into configurable modules while preserving centralized shared services for validations and posting.",
+      benefits: [
+        "Improved maintainability",
+        "Faster onboarding for new regions",
+        "Reduced complexity",
+        "Increased delivery speed for business changes"
       ],
-      impactLine: "Improved operational efficiency by 60-70% in region-specific workflows.",
-      scale:
-        "Supported enterprise regional operations with cross-team inputs, custom rules, and production-ready backend delivery.",
-      security:
-        "Kept regional rule handling consistent and safe with controlled backend validations and production-ready release processes.",
-      architecture: ["Regional Request", "Rule Mapper", "EMEA Service Layer", "Validation + Tax Logic", "Ops Output"]
+      stack: ["Java", "Spring Boot", "Rule Modules", "PostgreSQL", "REST APIs"]
+    },
+    {
+      title: "Production Support & System Reliability Engineering",
+      brief: "Maintained and optimized critical enterprise financial systems through issue resolution, monitoring, and continuous operational improvements.",
+      reason:
+        "Production-critical services required high reliability, rapid incident resolution, and operational continuity.",
+      solution:
+        "Handled root cause analysis, deployment stability, issue remediation, and reliability improvements across distributed services.",
+      benefits: [
+        "Improved uptime",
+        "Faster issue resolution",
+        "Strengthened system resilience",
+        "Enhanced enterprise trust"
+      ],
+      stack: ["Java", "SQL", "Jenkins", "Monitoring", "Microservices"]
     }
   ],
   certifications: [
@@ -267,9 +227,9 @@ export const portfolio = {
     }
   ],
   achievements: [
-    "2 On-Spot Awards at TCS for innovation and delivery contributions",
-    "Team of the Year recognition for high-impact collaboration",
-    "A Band performer for two consecutive years"
+    "Received 2 On-Spot Awards at Tata Consultancy Services for innovative solutions and project contributions.",
+    "Recognized as part of a Team of the Year award for exceptional team performance and successful delivery of key initiatives.",
+    "Received A Band performance ratings for three consecutive years at Tata Consultancy Services."
   ],
   targetRoles: [
     "Senior Java Backend Developer",

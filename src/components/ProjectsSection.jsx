@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight, X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import MotionSection from "./MotionSection";
 import SectionHeading from "./SectionHeading";
 
-function ProjectModal({ project, onClose, projects, currentIndex, onNavigate }) {
+function ProjectModal({ project, onClose }) {
   useEffect(() => {
     const onKeyDown = (event) => {
       if (event.key === "Escape") {
@@ -43,16 +43,15 @@ function ProjectModal({ project, onClose, projects, currentIndex, onNavigate }) 
       >
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-accent-500">Case Study</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[color:var(--lux-muted)]">Expanded Details</p>
               <h3 className="theme-text mt-3 font-display text-3xl font-bold">{project.title}</h3>
-              <p className="theme-muted mt-3 max-w-3xl text-base leading-8">{project.tagline}</p>
             </div>
 
             <button
               type="button"
               onClick={onClose}
               className="lux-icon-button"
-              aria-label="Close case study"
+            aria-label="Close details"
             >
               <X size={18} />
             </button>
@@ -70,31 +69,23 @@ function ProjectModal({ project, onClose, projects, currentIndex, onNavigate }) 
           </div>
 
           <div className="mt-8 grid gap-5 md:grid-cols-2">
-            <div className="lux-subpanel">
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-accent-500">Business Problem</p>
-              <p className="theme-muted mt-3 text-base leading-8">{project.problem}</p>
-            </div>
-            <div className="lux-subpanel">
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-accent-500">Technical Solution</p>
+          <div className="lux-subpanel border-[color:var(--lux-border)]">
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[color:var(--lux-muted)]">Reason</p>
+            <p className="theme-muted mt-3 text-sm leading-7">{project.reason}</p>
+          </div>
+          <div className="lux-subpanel border-[color:var(--lux-border)]">
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[color:var(--lux-muted)]">Solution</p>
               <p className="theme-muted mt-3 text-base leading-8">{project.solution}</p>
-            </div>
-            <div className="lux-subpanel">
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-accent-500">Scale</p>
-              <p className="theme-muted mt-3 text-base leading-8">{project.scale}</p>
-            </div>
-            <div className="lux-subpanel">
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-accent-500">Security Considerations</p>
-              <p className="theme-muted mt-3 text-base leading-8">{project.security}</p>
             </div>
           </div>
 
-          <div className="mt-5 rounded-[28px] border border-accent-500/16 bg-[linear-gradient(135deg,rgba(198,169,105,0.12),rgba(255,255,255,0.02))] p-6">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-accent-500">Business Impact</p>
-            <div className="mt-4 grid gap-3 md:grid-cols-3">
-              {project.impact.map((item) => (
+        <div className="mt-5 rounded-[28px] border border-[color:var(--lux-border)] bg-[color:var(--lux-panel-strong)] p-6">
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[color:var(--lux-gold)]">Benefits</p>
+          <div className="mt-4 grid gap-3">
+            {project.benefits.map((item) => (
                 <div
                   key={item}
-                  className="lux-subpanel text-sm leading-7 theme-muted"
+                className="lux-subpanel text-sm leading-7 theme-muted border-[color:var(--lux-border)]"
                 >
                   {item}
                 </div>
@@ -107,81 +98,57 @@ function ProjectModal({ project, onClose, projects, currentIndex, onNavigate }) 
 }
 
 export default function ProjectsSection({ projects }) {
-  const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const openModal = () => {
-    setCurrentProjectIndex(0);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const navigateProject = (newIndex) => {
-    if (newIndex >= 0 && newIndex < projects.length) {
-      setCurrentProjectIndex(newIndex);
-    }
-  };
+  const [activeProject, setActiveProject] = useState(null);
 
   return (
     <MotionSection id="projects" className="mx-auto max-w-7xl px-6 py-14 lg:px-8">
       <SectionHeading
         eyebrow="Featured Projects"
-        title="Technical execution and measurable backend impact"
-        description="Migration projects, automation initiatives, and regional enhancements with detailed architecture, technologies, and business outcomes."
+        title="Technical execution and abstracted backend impact"
+        description="A look into the structural challenges, technical solutions, and system improvements delivered across enterprise environments."
       />
 
-      <div className="mt-10 grid gap-5 xl:grid-cols-1">
-        <article className="glass-panel p-6 sm:p-7">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-accent-500">Project Portfolio</p>
-          <h3 className="theme-text mt-3 font-display text-3xl font-bold">Enterprise Backend Engineering</h3>
-          <p className="theme-muted mt-4 text-base leading-8">
-            Java 21 migration, invoice automation, APAC/EMEA regional workflows, and microservices modernization with measurable business impact.
-          </p>
-
-          <div className="mt-5 flex flex-wrap gap-2">
-            {["Java 21", "Spring Boot", "AWS SQS", "Microservices", "PostgreSQL", "REST APIs", "Docker", "Jenkins"].map((item) => (
-              <span
-                key={item}
-                className="lux-chip-soft"
-              >
-                {item}
-              </span>
-            ))}
-          </div>
-
-          <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            <div className="lux-subpanel">
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-accent-500">Migration & Modernization</p>
-              <p className="mt-3 text-sm leading-7 theme-muted">Java 8→21 migration across 9 production microservices</p>
-            </div>
-            <div className="lux-subpanel">
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-accent-500">Automation Impact</p>
-              <p className="mt-3 text-sm leading-7 theme-muted">50-70% efficiency gains in invoice and regional workflows</p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={openModal}
-            className="mt-6 inline-flex items-center gap-2 rounded-full border border-[color:var(--lux-border-strong)] bg-transparent px-5 py-3 text-sm font-semibold theme-text transition hover:border-[color:var(--lux-gold)] hover:bg-[color:color-mix(in_srgb,var(--lux-gold)_10%,transparent)] hover:text-[color:var(--lux-gold)]"
+      <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {projects.map((project, idx) => (
+          <article
+            key={idx}
+            className="glass-panel group flex min-h-[260px] flex-col justify-between p-6 sm:p-7 transition duration-300 hover:-translate-y-1 hover:border-[color:var(--lux-gold)] hover:shadow-panel"
           >
-            View Case Studies
-            <ArrowUpRight size={16} />
-          </button>
-        </article>
+            <div>
+              <h3 className="theme-text font-display text-xl font-bold leading-tight">{project.title}</h3>
+              <p className="theme-muted mt-4 text-sm leading-7">{project.brief}</p>
+            </div>
+            <div className="mt-6 flex items-center justify-between border-t border-[color:var(--lux-border)] pt-4">
+              <div className="flex flex-wrap gap-2">
+                {project.stack.slice(0, 2).map((item) => (
+                  <span key={item} className="text-xs font-medium text-[color:var(--lux-muted)]">
+                    {item}
+                  </span>
+                ))}
+                {project.stack.length > 2 && (
+                  <span className="text-xs font-medium text-[color:var(--lux-muted)]">
+                    +{project.stack.length - 2}
+                  </span>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveProject(project)}
+                className="rounded-full bg-[color:var(--lux-panel-strong)] p-2.5 text-[color:var(--lux-muted)] transition group-hover:bg-[color:var(--lux-gold)] group-hover:text-[#16110c]"
+                aria-label="Expand project details"
+              >
+                <Plus size={18} />
+              </button>
+            </div>
+          </article>
+        ))}
       </div>
 
       <AnimatePresence>
-        {isModalOpen && projects[currentProjectIndex] ? (
+        {activeProject ? (
           <ProjectModal
-            project={projects[currentProjectIndex]}
-            projects={projects}
-            currentIndex={currentProjectIndex}
-            onClose={closeModal}
-            onNavigate={navigateProject}
+            project={activeProject}
+            onClose={() => setActiveProject(null)}
           />
         ) : null}
       </AnimatePresence>

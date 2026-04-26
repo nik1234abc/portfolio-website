@@ -5,8 +5,8 @@ import ThemeToggle from "./ThemeToggle";
 const links = [
   { label: "About", href: "#about" },
   { label: "Skills", href: "#skills" },
-  { label: "Experience", href: "#experience" },
   { label: "Projects", href: "#projects" },
+  { label: "Certifications", href: "#credentials" },
   { label: "Contact", href: "#contact" }
 ];
 
@@ -16,7 +16,14 @@ export default function Navbar({ theme, toggleTheme, resumeFile }) {
   return (
     <header className="theme-navbar sticky top-0 z-50 backdrop-blur-xl transition-colors duration-500">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
-        <a href="#home" className="flex items-center gap-3">
+        <a 
+          href="#home" 
+          className="flex items-center gap-3"
+          onClick={(e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        >
           <span className="brand-mark">NG</span>
           <div>
             <p className="font-display text-base font-bold theme-text">Nikhil Gadhwal</p>

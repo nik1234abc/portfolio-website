@@ -102,7 +102,7 @@ function CertificateModal({ certification, onClose }) {
               <p className="theme-text mt-2 text-sm">Embedded certificate preview for recruiter verification.</p>
             </div>
             <span className="rounded-full border border-[color:var(--lux-border-strong)] bg-[color:var(--lux-bg)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-[color:var(--lux-muted)]">
-              AWS PDF
+              Official Credential
             </span>
           </div>
           <div className="mt-5 overflow-hidden rounded-[24px] border border-[color:var(--lux-border-strong)] bg-[color:var(--lux-bg)]">
@@ -149,67 +149,8 @@ function CertificateModal({ certification, onClose }) {
   );
 }
 
-function AchievementsModal({ achievements, onClose }) {
-  useEffect(() => {
-    const onKeyDown = (event) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    };
-
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKeyDown);
-
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [onClose]);
-
-  return (
-    <motion.div
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/78 px-4 py-8 backdrop-blur-sm"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ opacity: 0, y: 24, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 18, scale: 0.98 }}
-        transition={{ duration: 0.22, ease: "easeOut" }}
-        onClick={(event) => event.stopPropagation()}
-        className="glass-panel max-h-[88vh] w-full max-w-3xl overflow-y-auto p-6 sm:p-8"
-      >
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-accent-500">Career highlights</p>
-            <h3 className="theme-text mt-3 font-display text-3xl font-bold">Recognition and awards</h3>
-            <p className="theme-muted mt-3 text-base leading-8">A quick view of recruiter-ready achievements that reinforce performance and team impact.</p>
-          </div>
-
-          <button type="button" onClick={onClose} className="lux-icon-button" aria-label="Close highlights modal">
-            <X size={18} />
-          </button>
-        </div>
-
-        <div className="mt-8 grid gap-4">
-          {achievements.map((achievement) => (
-            <div key={achievement} className="lux-subpanel p-5">
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-accent-500">Achievement</p>
-              <p className="theme-muted mt-3 text-base leading-7">{achievement}</p>
-            </div>
-          ))}
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
 export default function CredentialsSection({ certifications, achievements }) {
   const [activeCertification, setActiveCertification] = useState(null);
-  const [showHighlights, setShowHighlights] = useState(false);
 
   return (
     <MotionSection id="credentials" className="mx-auto max-w-7xl px-6 py-14 lg:px-8">
@@ -222,7 +163,7 @@ export default function CredentialsSection({ certifications, achievements }) {
       <div className="mt-10 grid gap-5 xl:grid-cols-[0.95fr_1.05fr]">
         <div className="glass-panel p-7">
           <div className="flex items-center gap-3">
-            <BadgeCheck className="text-accent-500" size={22} />
+            <BadgeCheck className="text-[color:var(--lux-gold)]" size={22} />
             <h3 className="theme-text font-display text-2xl font-bold">Certification</h3>
           </div>
           <div className="mt-6 grid gap-4">
@@ -269,30 +210,22 @@ export default function CredentialsSection({ certifications, achievements }) {
 
         <div className="glass-panel p-7">
           <div className="flex items-center gap-3">
-            <Award className="text-accent-500" size={22} />
+            <Award className="text-[color:var(--lux-gold)]" size={22} />
             <h3 className="theme-text font-display text-2xl font-bold">Achievements</h3>
           </div>
           <div className="mt-6 grid gap-4">
-            <div className="lux-subpanel theme-muted text-sm leading-7">
-              2 On-Spot Awards, Team of the Year recognition, and consecutive A Band performance—surfaced for recruiter confidence.
-            </div>
+            {achievements.map((achievement, idx) => (
+              <div key={idx} className="lux-subpanel theme-muted text-sm leading-7">
+                {achievement}
+              </div>
+            ))}
           </div>
-          <button
-            type="button"
-            onClick={() => setShowHighlights(true)}
-            className="mt-6 inline-flex items-center justify-center rounded-full border border-[color:var(--lux-border-strong)] bg-transparent px-4 py-2 text-sm font-semibold transition hover:border-[color:var(--lux-gold)] hover:bg-[color:color-mix(in_srgb,var(--lux-gold)_10%,transparent)] hover:text-[color:var(--lux-gold)]"
-          >
-            View Highlights
-          </button>
         </div>
       </div>
 
       <AnimatePresence>
         {activeCertification ? (
           <CertificateModal certification={activeCertification} onClose={() => setActiveCertification(null)} />
-        ) : null}
-        {showHighlights ? (
-          <AchievementsModal achievements={achievements} onClose={() => setShowHighlights(false)} />
         ) : null}
       </AnimatePresence>
     </MotionSection>

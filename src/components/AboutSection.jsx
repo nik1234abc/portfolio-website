@@ -15,7 +15,7 @@ export default function AboutSection({ personal, focusAreas }) {
 
         <div className="grid gap-6">
           <div className="glass-panel p-7">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-accent-500">Current Role</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[color:var(--lux-muted)]">Current Role</p>
             <h3 className="theme-text mt-3 font-display text-2xl font-bold">
               Tata Consultancy Services (TCS)
             </h3>
@@ -26,7 +26,7 @@ export default function AboutSection({ personal, focusAreas }) {
           </div>
 
           <div className="glass-panel p-7">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-accent-500">Core Strengths</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[color:var(--lux-muted)]">Core Strengths</p>
             <p className="theme-muted mt-4 text-base leading-8">
               Scalable microservices, secure REST APIs, production issue resolution, and clear engineering delivery
               across cross-functional enterprise teams.
