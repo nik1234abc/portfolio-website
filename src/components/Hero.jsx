@@ -12,7 +12,8 @@ import {
   Mail,
   MapPin,
   ShieldCheck,
-  Terminal
+  Terminal,
+  Layers
 } from "lucide-react";
 import ButtonLink from "./ButtonLink";
 
@@ -199,12 +200,23 @@ export default function Hero({ personal, quickStats, onViewResumeClick }) {
                   <a
                     href="#interview-prep"
                     onClick={(e) => handleCategorySelect(e, "Spring Boot")}
-                    className="flex items-center gap-3 px-5 py-4 text-sm font-medium theme-text transition-colors hover:bg-[color:var(--lux-panel-strong)]"
+                    className="flex items-center gap-3 border-b border-[color:var(--lux-border)] px-5 py-4 text-sm font-medium theme-text transition-colors hover:bg-[color:var(--lux-panel-strong)]"
                   >
                     <Terminal size={18} className="text-[color:var(--lux-gold)]" />
                     <div>
                       <span className="block font-bold">Spring Boot Deep-Dive</span>
                       <span className="mt-0.5 block text-xs theme-muted">85 Architecture & Web Questions</span>
+                    </div>
+                  </a>
+                  <a
+                    href="#interview-prep"
+                    onClick={(e) => handleCategorySelect(e, "Application Flow")}
+                    className="flex items-center gap-3 px-5 py-4 text-sm font-medium theme-text transition-colors hover:bg-[color:var(--lux-panel-strong)]"
+                  >
+                    <Layers size={18} className="text-[color:var(--lux-gold)]" />
+                    <div>
+                      <span className="block font-bold">Application Architecture</span>
+                      <span className="mt-0.5 block text-xs theme-muted">Interactive Request Lifecycle</span>
                     </div>
                   </a>
                 </motion.div>

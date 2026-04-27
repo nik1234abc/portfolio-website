@@ -1,7 +1,123 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Brain, ChevronRight, Shuffle, Lightbulb, Target, AlertCircle, ArrowUp } from "lucide-react";
+import { Brain, ChevronRight, Shuffle, Lightbulb, Target, AlertCircle, ArrowUp, Smartphone, Shield, Server, Lock, Zap, Briefcase, Radio, Database, HardDrive, ArrowLeftRight, Plus, Minus, ArrowDown, Webhook, FileCheck, Activity } from "lucide-react";
 import { portfolio } from "../data/portfolio.js";
+
+const apiFlowSteps = [
+  { id: 1, title: "1. Client Request", icon: Smartphone, desc: "User triggers an action. A REST HTTP request is dispatched over the network, establishing a TCP/TLS connection and transmitting a JSON payload with necessary HTTP headers.", example: "POST /api/orders\n{\n  \"itemId\": 123\n}" },
+  { id: 2, title: "2. API Gateway & WAF", icon: Shield, desc: "Intercepts the request at the network edge. It performs SSL termination, enforces rate-limiting, applies WAF security rules against common exploits, and routes traffic internally.", example: "AWS API Gateway blocks the request if the user exceeds 100 requests/minute." },
+  { id: 3, title: "3. Load Balancer", icon: Server, desc: "Distributes incoming traffic across healthy microservice instances using algorithms like Round Robin, utilizing continuous health checks to avoid routing to failing nodes.", example: "AWS ALB routes your request to Server B because Server A currently has high CPU usage." },
+  { id: 4, title: "4. Auth & Security", icon: Lock, desc: "The request hits the Spring Security Filter Chain. The JWT token is intercepted, parsed, and cryptographically verified. Authorities are extracted into the SecurityContextHolder.", example: "Extracts 'Authorization: Bearer eyJhb...' and verifies the user has the 'ROLE_USER' authority." },
+  { id: 5, title: "5. Controller", icon: Webhook, desc: "The DispatcherServlet maps the URL to a specific @RestController. Spring's HttpMessageConverter (Jackson) automatically deserializes the JSON payload into a Java DTO.", example: "@PostMapping(\"/orders\")\npublic ResponseEntity<Order> createOrder(@RequestBody OrderDTO dto) { ... }" },
+  { id: 6, title: "6. Validation", icon: FileCheck, desc: "JSR-380 Bean Validation kicks in. If the DTO violates constraints, a MethodArgumentNotValidException is thrown, instantly returning a 400 Bad Request before wasting deeper resources.", example: "@NotNull on 'itemId' throws an exception immediately if the field is missing." },
+  { id: 7, title: "7. Service Layer", icon: Briefcase, desc: "The core business logic executes inside a @Service component. A database transaction is started via @Transactional, ensuring all data mutations succeed or fail together as a single atomic unit.", example: "Calculates final price, applies discounts, and prepares the order object." },
+  { id: 8, title: "8. Logging & Monitoring", icon: Activity, desc: "Trace IDs and Correlation IDs are added to the Mapped Diagnostic Context (MDC) for distributed tracing (ELK stack), while Actuator metrics track request latency.", example: "log.info(\"Processing order for user: {}\", userId);\nMetrics.counter(\"orders.created\").increment();" },
+  { id: 9, title: "9. Cache", icon: Zap, desc: "Before querying the primary database, the service checks an in-memory cache (like Redis). A cache hit returns data instantly, drastically reducing database load.", example: "Checks Redis cache for product availability before querying the primary database." },
+  { id: 10, title: "10. Kafka / Event Bus", icon: Radio, desc: "To keep the HTTP response fast, heavy secondary tasks (like sending emails or updating analytics) are pushed to an asynchronous message broker as fire-and-forget events.", example: "kafkaTemplate.send(\"order-events\", new OrderPlacedEvent(orderId));" },
+  { id: 11, title: "11. Repository Layer", icon: Database, desc: "Spring Data JPA abstracts the database interaction. The EntityManager manages the entity lifecycle, converting Java method calls into optimized SQL queries utilizing a HikariCP connection pool.", example: "orderRepository.save(order);\n// translates to 'INSERT INTO orders ...'" },
+  { id: 12, title: "12. Database Commit", icon: HardDrive, desc: "The database successfully writes data to disk. The ACID transaction commits, releasing row-level locks. If an unchecked exception occurred earlier, a rollback is triggered instead.", example: "PostgreSQL permanently writes the new order record to the disk." },
+  { id: 13, title: "13. HTTP Response", icon: ArrowLeftRight, desc: "The backend constructs a Response DTO, serializes it back into JSON, and attaches the appropriate HTTP status code. The payload traverses back through the network layers to the client.", example: "HTTP 201 Created\n{\n  \"orderId\": 456,\n  \"status\": \"SUCCESS\"\n}" }
+];
+
+const RestApiFlow = ({ goBack }) => {
+  const [expandedId, setExpandedId] = useState(null);
+
+  const toggleExpand = (id) => {
+    setExpandedId(prev => prev === id ? null : id);
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto w-full pb-8 px-4 sm:px-6">
+      <button
+        onClick={goBack}
+        className="mb-8 flex items-center text-accent-400 hover:text-accent-300 font-medium transition-colors bg-panel px-5 py-2.5 rounded-lg border border-gray-800 hover:border-accent-500/50 w-max"
+      >
+        <span className="mr-3 text-xl leading-none">←</span>
+        Back to Categories
+      </button>
+
+      <div className="text-center mb-10">
+        <h3 className="text-3xl md:text-4xl font-display font-bold text-white mb-4">REST API Lifecycle</h3>
+        <p className="text-gray-400 max-w-2xl mx-auto text-sm sm:text-base">
+          A top-to-bottom architectural flow of an HTTP request. Click on any step to expand and see practical examples.
+        </p>
+      </div>
+
+      <div className="relative flex flex-col items-center">
+        {apiFlowSteps.map((step, idx) => (
+          <React.Fragment key={step.id}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.4, delay: Math.min(idx * 0.1, 0.4) }}
+              className="w-full"
+            >
+              <div
+                onClick={() => toggleExpand(step.id)}
+                className={`glass-panel cursor-pointer border transition-all duration-300 relative z-10 flex flex-col overflow-hidden ${
+                  expandedId === step.id ? "border-accent-500 shadow-glow" : "border-gray-800 hover:border-gray-600 hover:-translate-y-1"
+                }`}
+              >
+                {/* Collapsed Header */}
+                <div className="p-4 sm:p-6 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-[color:color-mix(in_srgb,var(--lux-gold)_10%,transparent)] text-accent-400 flex items-center justify-center shrink-0">
+                      <step.icon size={24} className="sm:w-6 sm:h-6" />
+                    </div>
+                    <h4 className="text-base sm:text-lg font-display font-bold text-white">{step.title}</h4>
+                  </div>
+                  <div className={`shrink-0 transition-transform duration-300 ${expandedId === step.id ? 'text-accent-400 rotate-180' : 'text-gray-500'}`}>
+                    {expandedId === step.id ? <Minus size={20} /> : <Plus size={20} />}
+                  </div>
+                </div>
+
+                {/* Expanded Content */}
+                <AnimatePresence>
+                  {expandedId === step.id && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div className="px-5 pb-5 pt-2 border-t border-gray-800/50 mt-2">
+                        <p className="text-sm text-gray-300 leading-relaxed mb-4">
+                          {step.desc}
+                        </p>
+                        {step.example && (
+                          <div className="bg-ink/60 p-4 rounded-lg border border-gray-800/50">
+                            <span className="text-xs font-bold text-accent-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+                              <Lightbulb size={12} /> Example
+                            </span>
+                            <code className="text-sm text-gray-400 font-mono whitespace-pre-wrap">{step.example}</code>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+
+            {/* Vertical Arrow Connector */}
+            {idx < apiFlowSteps.length - 1 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                className="flex flex-col items-center justify-center py-1 z-0"
+              >
+                <div className="w-0.5 h-8 bg-gradient-to-b from-gray-700 to-accent-500/50 rounded-full"></div>
+                <ArrowDown size={18} className="text-accent-500/80 -mt-1.5" />
+              </motion.div>
+            )}
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const InterviewHub = () => {
   const { categories, questions } = portfolio.interviewHub;
@@ -169,7 +285,7 @@ const InterviewHub = () => {
 
         {/* LEVEL 1: Category Boxes */}
         {!activeCategory && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {categoryStats.map((cat) => (
               <div
                 key={cat.name}
@@ -184,11 +300,27 @@ const InterviewHub = () => {
                 </span>
               </div>
             ))}
+            {/* New Interactive Flow Box */}
+            <div
+              onClick={() => handleCategoryClick("Application Flow")}
+              className="group cursor-pointer bg-panel border border-gray-800 rounded-2xl p-10 flex flex-col justify-center items-center text-center hover:border-accent-500 hover:shadow-glow transition-all duration-300 transform hover:-translate-y-1"
+            >
+              <h3 className="text-2xl md:text-3xl font-display font-bold text-white mb-4 group-hover:text-accent-400 transition-colors">
+                Application Flow
+              </h3>
+              <span className="text-sm font-medium text-gray-400 bg-ink border border-gray-800 px-5 py-2 rounded-full">
+                Interactive Architecture
+              </span>
+            </div>
           </div>
         )}
 
-        {/* LEVEL 2: Sub-Topics Filters & Questions List */}
-        {activeCategory && (
+        {/* LEVEL 2: Content Rendering */}
+        {activeCategory === "Application Flow" && (
+          <RestApiFlow goBack={goBack} />
+        )}
+        
+        {activeCategory && activeCategory !== "Application Flow" && (
           <div className="max-w-5xl mx-auto">
             
             {/* Back Button */}
