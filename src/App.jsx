@@ -13,7 +13,7 @@ import { portfolio } from "./data/portfolio";
 import { useTheme } from "./hooks/useTheme";
 import { Home } from "lucide-react";
 
-const InterviewHub = lazy(() => import("./components/InterviewHub"));
+const KnowledgeHub = lazy(() => import("./components/KnowledgeHub"));
 const ResumeModal = lazy(() => import("./components/ResumeModal"));
 
 function App() {
@@ -100,7 +100,7 @@ function App() {
           achievements={portfolio.achievements}
         />
       <Suspense fallback={<div id="interview-prep" className="min-h-screen bg-surface" />}>
-        <InterviewHub />
+        <KnowledgeHub />
       </Suspense>
         <ContactSection personal={portfolio.personal} />
       </main>

@@ -5,9 +5,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: "#0D1117",
-        surface: "#13181F",
-        panel: "#171D25",
+        ink: "var(--lux-bg-alt)",
+        surface: "var(--lux-bg)",
+        panel: "var(--lux-panel-strong)",
         accent: {
           50: "#f7f1e5",
           100: "#eadcc2",

@@ -1,7 +1,9 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Brain, ChevronRight, Shuffle, Lightbulb, Target, AlertCircle, ArrowUp, Smartphone, Shield, Server, Lock, Zap, Briefcase, Radio, Database, HardDrive, ArrowLeftRight, Plus, Minus, ArrowDown, Webhook, FileCheck, Activity } from "lucide-react";
+import { Brain, ChevronRight, Shuffle, Lightbulb, Target, AlertCircle, ArrowUp, Smartphone, Shield, Server, Lock, Zap, Briefcase, Radio, Database, HardDrive, ArrowLeftRight, Plus, Minus, ArrowDown, Webhook, FileCheck, Activity, ChevronDown, ChevronUp, Tag } from "lucide-react";
 import { portfolio } from "../data/portfolio.js";
+import { coding } from "../data/coding.js";
+import QuizSection from "./QuizSection.jsx";
 
 const apiFlowSteps = [
   { id: 1, title: "1. Client Request", icon: Smartphone, desc: "User triggers an action. A REST HTTP request is dispatched over the network, establishing a TCP/TLS connection and transmitting a JSON payload with necessary HTTP headers.", example: "POST /api/orders\n{\n  \"itemId\": 123\n}" },
@@ -30,15 +32,15 @@ const RestApiFlow = ({ goBack }) => {
     <div className="max-w-3xl mx-auto w-full pb-8 px-4 sm:px-6">
       <button
         onClick={goBack}
-        className="mb-8 flex items-center text-accent-400 hover:text-accent-300 font-medium transition-colors bg-panel px-5 py-2.5 rounded-lg border border-gray-800 hover:border-accent-500/50 w-max"
+        className="mb-8 flex items-center text-accent-400 hover:text-accent-300 font-medium transition-colors bg-panel px-5 py-2.5 rounded-lg border border-[color:var(--lux-border)] hover:border-accent-500/50 w-max"
       >
         <span className="mr-3 text-xl leading-none">←</span>
         Back to Categories
       </button>
 
       <div className="text-center mb-10">
-        <h3 className="text-3xl md:text-4xl font-display font-bold text-white mb-4">REST API Lifecycle</h3>
-        <p className="text-gray-400 max-w-2xl mx-auto text-sm sm:text-base">
+        <h3 className="text-3xl md:text-4xl font-display font-bold theme-text mb-4">REST API Lifecycle</h3>
+        <p className="theme-muted max-w-2xl mx-auto text-sm sm:text-base">
           A top-to-bottom architectural flow of an HTTP request. Click on any step to expand and see practical examples.
         </p>
       </div>
@@ -56,7 +58,7 @@ const RestApiFlow = ({ goBack }) => {
               <div
                 onClick={() => toggleExpand(step.id)}
                 className={`glass-panel cursor-pointer border transition-all duration-300 relative z-10 flex flex-col overflow-hidden ${
-                  expandedId === step.id ? "border-accent-500 shadow-glow" : "border-gray-800 hover:border-gray-600 hover:-translate-y-1"
+                  expandedId === step.id ? "border-accent-500 shadow-glow" : "border-[color:var(--lux-border)] hover:border-[color:var(--lux-border-strong)] hover:-translate-y-1"
                 }`}
               >
                 {/* Collapsed Header */}
@@ -65,7 +67,7 @@ const RestApiFlow = ({ goBack }) => {
                     <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-[color:color-mix(in_srgb,var(--lux-gold)_10%,transparent)] text-accent-400 flex items-center justify-center shrink-0">
                       <step.icon size={24} className="sm:w-6 sm:h-6" />
                     </div>
-                    <h4 className="text-base sm:text-lg font-display font-bold text-white">{step.title}</h4>
+                    <h4 className="text-base sm:text-lg font-display font-bold theme-text">{step.title}</h4>
                   </div>
                   <div className={`shrink-0 transition-transform duration-300 ${expandedId === step.id ? 'text-accent-400 rotate-180' : 'text-gray-500'}`}>
                     {expandedId === step.id ? <Minus size={20} /> : <Plus size={20} />}
@@ -81,16 +83,16 @@ const RestApiFlow = ({ goBack }) => {
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <div className="px-5 pb-5 pt-2 border-t border-gray-800/50 mt-2">
+                      <div className="px-5 pb-5 pt-2 border-t border-[color:var(--lux-border)] mt-2">
                         <p className="text-sm text-gray-300 leading-relaxed mb-4">
                           {step.desc}
                         </p>
                         {step.example && (
-                          <div className="bg-ink/60 p-4 rounded-lg border border-gray-800/50">
+                          <div className="bg-ink/60 p-4 rounded-lg border border-[color:var(--lux-border)]">
                             <span className="text-xs font-bold text-accent-500 uppercase tracking-wider mb-2 flex items-center gap-2">
                               <Lightbulb size={12} /> Example
                             </span>
-                            <code className="text-sm text-gray-400 font-mono whitespace-pre-wrap">{step.example}</code>
+                            <code className="text-sm theme-muted font-mono whitespace-pre-wrap">{step.example}</code>
                           </div>
                         )}
                       </div>
@@ -119,7 +121,7 @@ const RestApiFlow = ({ goBack }) => {
   );
 };
 
-const InterviewHub = () => {
+const KnowledgeHub = () => {
   const { categories, questions } = portfolio.interviewHub;
   
   const [activeCategory, setActiveCategory] = useState(null);
@@ -179,26 +181,19 @@ const InterviewHub = () => {
     document.getElementById("interview-prep")?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Reset state back to the main categories when clicking the "Knowledge Hub" nav link
+  // Listen for direct category selections from the Hero dropdown
   useEffect(() => {
-    const handleNavClick = (e) => {
-      const target = e.target.closest("a");
-      if (target && target.getAttribute("href") === "#interview-prep" && target.classList.contains("theme-nav-link")) {
+    const handleCategorySelect = (e) => {
+      const category = e.detail;
+      if (!category) {
+        // Plain Knowledge Hub link clicked — reset to main page
         setActiveCategory(null);
         setActiveTopic(null);
         setCurrentIndex(0);
         setIsRevealed(false);
         setActiveFollowUp(null);
+        return;
       }
-    };
-    document.addEventListener("click", handleNavClick);
-    return () => document.removeEventListener("click", handleNavClick);
-  }, []);
-
-  // Listen for direct category selections from the Hero dropdown
-  useEffect(() => {
-    const handleCategorySelect = (e) => {
-      const category = e.detail;
       setActiveCategory(category);
       setActiveTopic(null);
       setCurrentIndex(0);
@@ -211,17 +206,48 @@ const InterviewHub = () => {
     return () => window.removeEventListener("knowledgeHubCategorySelect", handleCategorySelect);
   }, []);
 
+  // Reset when any #interview-prep anchor is clicked (e.g. Hero title link or Navbar)
+  useEffect(() => {
+    const handleAnchorClick = (e) => {
+      const target = e.target.closest("a");
+      if (target && target.getAttribute("href") === "#interview-prep") {
+        // Only reset if it's NOT a dropdown item (those dispatch knowledgeHubCategorySelect)
+        if (!target.dataset.category) {
+          setActiveCategory(null);
+          setActiveTopic(null);
+          setCurrentIndex(0);
+          setIsRevealed(false);
+          setActiveFollowUp(null);
+        }
+      }
+    };
+    document.addEventListener("click", handleAnchorClick);
+    return () => document.removeEventListener("click", handleAnchorClick);
+  }, []);
+
   // Data Processing
+  const allQuestions = useMemo(() => {
+    const combined = [...questions];
+    let fallbackId = 1000;
+    
+    coding?.questions?.forEach((q) => combined.push(q));
+    return combined;
+  }, [questions]);
+
   const categoryStats = useMemo(() => {
-    return categories.map((cat) => ({
+    const qaCategories = categories.filter(c => c !== "Coding Patterns");
+    const learnerCategories = [...new Set(coding?.questions?.map(q => q.category) || [])];
+    const allCategoryNames = [...qaCategories, ...learnerCategories];
+
+    return allCategoryNames.map((cat) => ({
       name: cat,
-      count: questions.filter((q) => q.category === cat).length,
+      count: allQuestions.filter((q) => q.category === cat).length,
     }));
-  }, [categories, questions]);
+  }, [categories, allQuestions]);
 
   const topicsForCategory = useMemo(() => {
     if (!activeCategory) return [];
-    const catQs = questions.filter((q) => q.category === activeCategory);
+    const catQs = allQuestions.filter((q) => q.category === activeCategory);
     // If a question doesn't have a topic yet (like Spring Boot), group it under "General Topics"
     const uniqueTopics = [...new Set(catQs.map((q) => q.topic || "General Topics"))];
     
@@ -235,18 +261,18 @@ const InterviewHub = () => {
         name: topic,
         count: catQs.filter((q) => (q.topic || "General Topics") === topic).length,
       }));
-  }, [activeCategory, questions]);
+  }, [activeCategory, allQuestions]);
 
   const displayedQuestions = useMemo(() => {
     if (activeCategory) {
-      let filtered = questions.filter((q) => q.category === activeCategory);
+      let filtered = allQuestions.filter((q) => q.category === activeCategory);
       if (activeTopic && activeTopic !== "ALL") {
         filtered = filtered.filter((q) => (q.topic || "General Topics") === activeTopic);
       }
       return filtered;
     }
     return [];
-  }, [activeCategory, activeTopic, questions]);
+  }, [activeCategory, activeTopic, allQuestions]);
 
   // Flashcard Actions
   const handleNext = () => {
@@ -273,42 +299,54 @@ const InterviewHub = () => {
   const activeQuestion = displayedQuestions[currentIndex];
 
   return (
-    <section id="interview-prep" className="scroll-mt-32 min-h-screen bg-surface py-16 px-4 sm:px-6 lg:px-8 font-body text-gray-300">
+    <section id="interview-prep" className="scroll-mt-20 min-h-screen bg-surface py-10 px-4 sm:px-6 lg:px-8 font-body text-gray-300">
       <div className="max-w-6xl mx-auto">
         
         {/* Header Section */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-6">
+          <h2 className="text-4xl md:text-5xl font-display font-bold theme-text mb-6">
             Knowledge <span className="text-accent-500">Hub</span>
           </h2>
         </div>
 
         {/* LEVEL 1: Category Boxes */}
         {!activeCategory && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
             {categoryStats.map((cat) => (
               <div
                 key={cat.name}
                 onClick={() => handleCategoryClick(cat.name)}
-                className="group cursor-pointer bg-panel border border-gray-800 rounded-2xl p-10 flex flex-col justify-center items-center text-center hover:border-accent-500 hover:shadow-glow transition-all duration-300 transform hover:-translate-y-1"
+                className="group cursor-pointer bg-panel border border-[color:var(--lux-border)] rounded-2xl p-5 sm:p-8 flex flex-col justify-center items-center text-center hover:border-accent-500 hover:shadow-glow transition-all duration-300 transform hover:-translate-y-1"
               >
-                <h3 className="text-3xl font-display font-bold text-white mb-4 group-hover:text-accent-400 transition-colors">
+                <h3 className="text-lg sm:text-2xl md:text-3xl font-display font-bold theme-text mb-3 group-hover:text-accent-400 transition-colors">
                   {cat.name}
                 </h3>
-                <span className="text-sm font-medium text-gray-400 bg-ink border border-gray-800 px-5 py-2 rounded-full">
-                  {cat.count} Deep-Dive Questions
+                <span className="text-xs sm:text-sm font-medium theme-muted bg-ink border border-[color:var(--lux-border)] px-3 sm:px-5 py-1.5 sm:py-2 rounded-full">
+                  {cat.count} Questions
                 </span>
               </div>
             ))}
-            {/* New Interactive Flow Box */}
+            {/* Quick Quiz Box */}
+            <div
+              onClick={() => handleCategoryClick("Quick Quiz")}
+              className="group cursor-pointer bg-panel border border-[color:var(--lux-border)] rounded-2xl p-5 sm:p-8 flex flex-col justify-center items-center text-center hover:border-accent-500 hover:shadow-glow transition-all duration-300 transform hover:-translate-y-1"
+            >
+              <h3 className="text-lg sm:text-2xl md:text-3xl font-display font-bold theme-text mb-3 group-hover:text-accent-400 transition-colors">
+                Quick Quiz
+              </h3>
+              <span className="text-xs sm:text-sm font-medium theme-muted bg-ink border border-[color:var(--lux-border)] px-3 sm:px-5 py-1.5 sm:py-2 rounded-full">
+                MCQ + One Word
+              </span>
+            </div>
+            {/* Application Flow Box */}
             <div
               onClick={() => handleCategoryClick("Application Flow")}
-              className="group cursor-pointer bg-panel border border-gray-800 rounded-2xl p-10 flex flex-col justify-center items-center text-center hover:border-accent-500 hover:shadow-glow transition-all duration-300 transform hover:-translate-y-1"
+              className="group cursor-pointer bg-panel border border-[color:var(--lux-border)] rounded-2xl p-5 sm:p-8 flex flex-col justify-center items-center text-center hover:border-accent-500 hover:shadow-glow transition-all duration-300 transform hover:-translate-y-1"
             >
-              <h3 className="text-2xl md:text-3xl font-display font-bold text-white mb-4 group-hover:text-accent-400 transition-colors">
+              <h3 className="text-lg sm:text-2xl md:text-3xl font-display font-bold theme-text mb-3 group-hover:text-accent-400 transition-colors">
                 Application Flow
               </h3>
-              <span className="text-sm font-medium text-gray-400 bg-ink border border-gray-800 px-5 py-2 rounded-full">
+              <span className="text-xs sm:text-sm font-medium theme-muted bg-ink border border-[color:var(--lux-border)] px-3 sm:px-5 py-1.5 sm:py-2 rounded-full">
                 Interactive Architecture
               </span>
             </div>
@@ -316,17 +354,21 @@ const InterviewHub = () => {
         )}
 
         {/* LEVEL 2: Content Rendering */}
+        {activeCategory === "Quick Quiz" && (
+          <QuizSection onBack={goBack} />
+        )}
+
         {activeCategory === "Application Flow" && (
           <RestApiFlow goBack={goBack} />
         )}
-        
-        {activeCategory && activeCategory !== "Application Flow" && (
+
+        {activeCategory && activeCategory !== "Application Flow" && activeCategory !== "Quick Quiz" && (
           <div className="max-w-5xl mx-auto">
             
             {/* Back Button */}
             <button
               onClick={goBack}
-              className="mb-8 flex items-center text-accent-400 hover:text-accent-300 font-medium transition-colors bg-panel px-5 py-2.5 rounded-lg border border-gray-800 hover:border-accent-500/50 w-max"
+              className="mb-8 flex items-center text-accent-400 hover:text-accent-300 font-medium transition-colors bg-panel px-5 py-2.5 rounded-lg border border-[color:var(--lux-border)] hover:border-accent-500/50 w-max"
             >
               <span className="mr-3 text-xl leading-none">←</span>
               Back to Categories
@@ -340,13 +382,13 @@ const InterviewHub = () => {
                   onClick={handleAllTopicsClick}
                   className={`cursor-pointer rounded-xl p-4 flex flex-col justify-center items-center text-center transition-all duration-300 border ${
                     activeTopic === "ALL"
-                      ? "bg-accent-600 border-accent-500 shadow-glow text-white"
-                      : "bg-panel border-gray-800 text-gray-400 hover:border-accent-500 hover:text-gray-200"
+                      ? "border-[color:var(--lux-gold)] bg-[color:color-mix(in_srgb,var(--lux-gold)_15%,transparent)] text-[color:var(--lux-gold)] shadow-glow"
+                      : "bg-panel border-[color:var(--lux-border)] theme-muted hover:border-accent-500"
                   }`}
                 >
                   <h3 className="text-sm font-display font-bold mb-1">All {activeCategory}</h3>
                   <span className="text-[10px] font-medium uppercase tracking-wider opacity-80">
-                    {questions.filter(q => q.category === activeCategory).length} Questions
+                    {allQuestions.filter(q => q.category === activeCategory).length} Questions
                   </span>
                 </div>
 
@@ -357,8 +399,8 @@ const InterviewHub = () => {
                     onClick={() => handleTopicClick(topic.name)}
                     className={`cursor-pointer rounded-xl p-4 flex flex-col justify-center items-center text-center transition-all duration-300 border ${
                       activeTopic === topic.name
-                        ? "bg-accent-600 border-accent-500 shadow-glow text-white"
-                        : "bg-panel border-gray-800 text-gray-400 hover:border-accent-500 hover:text-gray-200"
+                        ? "border-[color:var(--lux-gold)] bg-[color:color-mix(in_srgb,var(--lux-gold)_15%,transparent)] text-[color:var(--lux-gold)] shadow-glow"
+                        : "bg-panel border-[color:var(--lux-border)] theme-muted hover:border-accent-500"
                     }`}
                   >
                     <h3 className="text-sm font-display font-bold mb-1 leading-tight line-clamp-2">
@@ -375,7 +417,7 @@ const InterviewHub = () => {
             {/* Original Flashcard UI */}
             <div ref={flashcardRef} className="mt-8 scroll-mt-32">
               {!activeQuestion ? (
-                <div className="text-center py-12 text-gray-500 bg-panel rounded-xl border border-gray-800">
+                <div className="text-center py-12 theme-muted bg-panel rounded-xl border border-[color:var(--lux-border)]">
                   No questions found.
                 </div>
               ) : (
@@ -389,18 +431,18 @@ const InterviewHub = () => {
                       >
                         <ArrowUp size={14} /> Back
                       </button>
-                      <span className="lux-chip-soft flex items-center gap-2">
+                    <span className="lux-chip-soft flex items-center gap-2 text-xs sm:text-sm max-w-[180px] sm:max-w-none truncate">
                         <Brain size={14} className="text-[color:var(--lux-gold)]" />
                         {activeQuestion.category} {activeQuestion.topic ? `• ${activeQuestion.topic}` : ""}
                       </span>
                     </div>
-                    <span className="text-sm font-medium theme-muted">
+                    <span className="text-xs sm:text-sm font-medium theme-muted whitespace-nowrap">
                       Question {currentIndex + 1} of {displayedQuestions.length}
                     </span>
                   </div>
 
                   <div className="flex-1 py-8">
-                    <h3 className="font-display text-2xl font-bold leading-tight theme-text sm:text-3xl lg:max-w-4xl">
+                    <h3 className="font-display text-xl font-bold leading-tight theme-text sm:text-2xl lg:text-3xl lg:max-w-4xl">
                       {activeQuestion.id}. {activeQuestion.question}
                     </h3>
 
@@ -433,18 +475,20 @@ const InterviewHub = () => {
                             <p className="text-base sm:text-lg leading-relaxed theme-text">{activeQuestion.simpleAnswer}</p>
                           </div>
 
-                          <div className="grid gap-6 md:grid-cols-2">
+                          <div className="grid gap-4 md:grid-cols-2">
                             <div className="lux-subpanel">
                               <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-[color:var(--lux-muted)] mb-3"><Lightbulb size={16} /> Explanation</p>
-                              <p className="text-sm leading-relaxed theme-muted">{activeQuestion.explanation}</p>
+                              <p className="text-sm leading-relaxed theme-muted whitespace-pre-wrap">{activeQuestion.explanation}</p>
                             </div>
-                            <div className="lux-subpanel">
-                              <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-[color:var(--lux-muted)] mb-3"><Target size={16} /> Real-world Example</p>
-                              <p className="text-sm leading-relaxed theme-muted whitespace-pre-wrap font-mono">{activeQuestion.example}</p>
+                            <div className="lux-subpanel flex flex-col">
+                              <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-[color:var(--lux-muted)] mb-3 shrink-0"><Target size={16} /> Real-world Example</p>
+                              <div className="bg-ink/60 border border-[color:var(--lux-border)] rounded-lg p-4 overflow-x-auto flex-1">
+                                <pre className="text-sm leading-relaxed theme-muted font-mono whitespace-pre-wrap">{activeQuestion.example}</pre>
+                              </div>
                             </div>
                           </div>
 
-                          <div className="grid gap-6 md:grid-cols-[1.2fr_0.8fr]">
+                          <div className="grid gap-4 md:grid-cols-[1.2fr_0.8fr]">
                             {activeQuestion.followUps && activeQuestion.followUps.length > 0 && (
                               <div>
                                 <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-[color:var(--lux-muted)] mb-3"><AlertCircle size={16} /> Common Follow-ups</p>
@@ -477,6 +521,7 @@ const InterviewHub = () => {
                                 </ul>
                               </div>
                             )}
+                          {activeQuestion.keyPoints && activeQuestion.keyPoints.length > 0 && (
                             <div>
                               <p className="text-sm font-semibold uppercase tracking-widest text-[color:var(--lux-muted)] mb-3">Key Points</p>
                               <ul className="space-y-2">
@@ -485,6 +530,7 @@ const InterviewHub = () => {
                                 ))}
                               </ul>
                             </div>
+                          )}
                           </div>
                         </motion.div>
                       )}
@@ -505,4 +551,4 @@ const InterviewHub = () => {
   );
 };
 
-export default InterviewHub;
+export default KnowledgeHub;

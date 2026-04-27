@@ -1,4 +1,9 @@
 import { springBootInterview } from "./springBootInterview.js";
+import { restApiInterview } from "./restApiInterview.js";
+import { kafkaInterview } from "./kafkaInterview.js";
+import { microservicesInterview } from "./microservicesInterview.js";
+import { systemDesign } from "./systemDesign.js";
+import { coding } from "./coding.js";
 
 const assignTopics = (questions) => {
   return questions.map(q => {
@@ -27,6 +32,17 @@ const assignTopics = (questions) => {
       else if (q.id <= 76) q.topic = "10. Microservices Basics";
       else if (q.id <= 79) q.topic = "11. Security Basics";
       else q.topic = "12. Real-World / Practical Questions";
+    } else if (q.category === "REST APIs") {
+      if (q.id <= 9) q.topic = "1. REST Fundamentals";
+      else if (q.id <= 19) q.topic = "2. HTTP Basics";
+      else if (q.id <= 29) q.topic = "3. API Design";
+      else if (q.id <= 37) q.topic = "4. Request & Response Handling";
+      else if (q.id <= 44) q.topic = "5. Status Codes Deep Dive";
+      else if (q.id <= 53) q.topic = "6. Security";
+      else if (q.id <= 57) q.topic = "7. Error Handling";
+      else if (q.id <= 62) q.topic = "8. Performance & Scalability";
+      else if (q.id <= 66) q.topic = "9. Idempotency & Reliability";
+      else q.topic = "10. Real-World Scenarios";
     }
     return q;
   });
@@ -295,7 +311,8 @@ export const portfolio = {
   ]
   ,
   interviewHub: {
-    categories: ["Java", "Spring Boot"],
+    categories: ["Java", "Spring Boot", "REST APIs", "Kafka", "Microservices", "System Design"],
+    learnerCategories: [],
     questions: assignTopics([
       {
         id: 1,
@@ -1785,6 +1802,6 @@ export const portfolio = {
         ],
         keyPoints: ["Equal objects MUST have equal hash codes", "Unequal objects can share a hash code (Collision)", "Always override both together"]
       }
-    ].concat(springBootInterview.questions))
+    ].concat(springBootInterview.questions).concat(restApiInterview.questions).concat(kafkaInterview.questions).concat(microservicesInterview.questions).concat(systemDesign.questions))
   }
 };

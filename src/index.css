@@ -4,7 +4,7 @@
 
 :root {
   --lux-bg: #f8f7f4;
-  --lux-bg-alt: #f3f4f6;
+  --lux-bg-alt: #ede9e0;
   --lux-panel: rgba(255, 255, 255, 0.88);
   --lux-panel-strong: #ffffff;
   --lux-panel-soft: rgba(255, 255, 255, 0.72);
@@ -16,6 +16,8 @@
   --lux-border-strong: rgba(198, 169, 105, 0.44);
   --lux-shadow: 0 22px 55px rgba(17, 24, 39, 0.08);
   --lux-shadow-strong: 0 18px 45px rgba(17, 24, 39, 0.12);
+  --lux-code-bg: #f0ece4;
+  --lux-code-text: #1f2937;
   --theme-gradient:
     radial-gradient(circle at top left, rgba(198, 169, 105, 0.18), transparent 26%),
     radial-gradient(circle at bottom right, rgba(139, 115, 85, 0.10), transparent 22%),
@@ -36,6 +38,8 @@
   --lux-border-strong: rgba(198, 169, 105, 0.32);
   --lux-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
   --lux-shadow-strong: 0 18px 48px rgba(0, 0, 0, 0.34);
+  --lux-code-bg: #0f1117;
+  --lux-code-text: #d1d5db;
   --theme-gradient:
     radial-gradient(circle at top left, rgba(198, 169, 105, 0.14), transparent 24%),
     radial-gradient(circle at bottom right, rgba(139, 115, 85, 0.16), transparent 22%),
