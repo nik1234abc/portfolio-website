@@ -27,8 +27,10 @@ export default function Hero({ personal, quickStats }) {
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
     };
   }, []);
 
@@ -49,9 +51,11 @@ export default function Hero({ personal, quickStats }) {
   }
 
   return (
-    <section id="home" className="relative overflow-hidden pt-8 sm:pt-10">
-      <div className="hero-orb hero-orb-left" />
-      <div className="hero-orb hero-orb-right" />
+    <section id="home" className="relative pt-8 sm:pt-10">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="hero-orb hero-orb-left" />
+        <div className="hero-orb hero-orb-right" />
+      </div>
       <div className="mx-auto grid max-w-7xl gap-8 px-6 pb-10 pt-6 lg:grid-cols-[1.2fr_0.8fr] lg:px-8 lg:pb-16 lg:pt-10">
         <div className="relative z-10">
           <motion.div
