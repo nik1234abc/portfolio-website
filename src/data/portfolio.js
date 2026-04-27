@@ -71,8 +71,7 @@ export const portfolio = {
       "I build reliable backend platforms for enterprise and financial workflows, with strong depth in distributed systems, production support, secure service delivery, and cloud modernization. My work is centered on improving data consistency, reducing operational friction, and keeping high-volume systems resilient in production.",
     availability:
       "Feel free to connect for backend engineering, cloud architecture, technology discussions, or simply to explore the work I’m building.",
-    resumeFile: "/Nikhil_Gadhwal_Java_Backend_Developer.pdf",
-    profilePhoto: "/profile-photo.jpg"
+    resumeFile: "/Nikhil_Gadhwal_Java_Backend_Developer.pdf"
   },
   heroHighlights: [
     "4+ years in enterprise backend engineering",

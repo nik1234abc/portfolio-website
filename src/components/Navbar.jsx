@@ -7,11 +7,10 @@ const links = [
   { label: "Skills", href: "#skills" },
   { label: "Projects", href: "#projects" },
   { label: "Certifications", href: "#credentials" },
-  { label: "Knowledge Hub", href: "#interview-prep" },
   { label: "Contact", href: "#contact" }
 ];
 
-export default function Navbar({ theme, toggleTheme, resumeFile }) {
+export default function Navbar({ theme, toggleTheme, onViewResumeClick }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -40,14 +39,14 @@ export default function Navbar({ theme, toggleTheme, resumeFile }) {
           ))}
         </div>
 
-        <div className="hidden items-center gap-3 lg:flex">
-          <a
-            href={resumeFile}
+        <div className="hidden items-center gap-4 lg:flex">
+          <button
+            type="button"
+            onClick={onViewResumeClick}
             className="inline-flex items-center rounded-full border border-[color:var(--lux-border)] bg-[color:color-mix(in_srgb,var(--lux-panel-soft)_82%,transparent)] px-4 py-2 text-sm font-semibold theme-text transition hover:border-[color:var(--lux-border-strong)] hover:text-[color:var(--lux-gold)]"
-            download
           >
-            Resume
-          </a>
+            View Resume
+          </button>
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
         </div>
 
@@ -77,13 +76,16 @@ export default function Navbar({ theme, toggleTheme, resumeFile }) {
                 {link.label}
               </a>
             ))}
-            <a
-              href={resumeFile}
-              download
-              className="inline-flex w-fit items-center rounded-full bg-[color:var(--lux-gold)] px-4 py-2 text-sm font-semibold text-[#16110c] shadow-glow"
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                onViewResumeClick();
+              }}
+              className="mt-2 inline-flex w-fit items-center rounded-full border border-[color:var(--lux-border)] bg-[color:color-mix(in_srgb,var(--lux-panel-soft)_82%,transparent)] px-5 py-2.5 text-sm font-semibold theme-text transition hover:border-[color:var(--lux-border-strong)] hover:text-[color:var(--lux-gold)]"
             >
-              Download Resume
-            </a>
+              View Resume
+            </button>
           </div>
         </div>
       ) : null}

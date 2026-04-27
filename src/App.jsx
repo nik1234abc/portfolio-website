@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import AboutSection from "./components/AboutSection";
 import ContactSection from "./components/ContactSection";
@@ -11,9 +12,12 @@ import ProjectsSection from "./components/ProjectsSection";
 import SkillsSection from "./components/SkillsSection";
 import { portfolio } from "./data/portfolio";
 import { useTheme } from "./hooks/useTheme";
+import { Home } from "lucide-react";
+import ResumeModal from "./components/ResumeModal";
 
 function App() {
   const { theme, toggleTheme } = useTheme();
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
 
   useEffect(() => {
     if ("scrollRestoration" in window.history) {
@@ -67,7 +71,11 @@ function App() {
         <script type="application/ld+json">{JSON.stringify(personSchema)}</script>
       </Helmet>
 
-      <Navbar theme={theme} toggleTheme={toggleTheme} resumeFile={portfolio.personal.resumeFile} />
+      <Navbar
+        theme={theme}
+        toggleTheme={toggleTheme}
+        onViewResumeClick={() => setIsResumeModalOpen(true)}
+      />
 
       <main>
         <Hero personal={portfolio.personal} quickStats={portfolio.quickStats} />
@@ -83,6 +91,28 @@ function App() {
       </main>
 
       <Footer personal={portfolio.personal} />
+
+      {/* Floating Home / Back to Top Button */}
+      <motion.button
+        drag
+        dragMomentum={false}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--lux-gold)] text-[#16110c] shadow-glow hover:brightness-110 focus:outline-none cursor-grab active:cursor-grabbing"
+        aria-label="Back to top"
+      >
+        <Home size={20} />
+      </motion.button>
+
+      <AnimatePresence>
+        {isResumeModalOpen && (
+          <ResumeModal
+            resumeFile={portfolio.personal.resumeFile}
+            onClose={() => setIsResumeModalOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

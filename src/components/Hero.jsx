@@ -1,17 +1,43 @@
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import {
+  Brain,
   BriefcaseBusiness,
+  ChevronDown,
+  Coffee,
   Download,
   Github,
   Globe2,
   Linkedin,
   Mail,
   MapPin,
-  ShieldCheck
+  ShieldCheck,
+  Terminal
 } from "lucide-react";
 import ButtonLink from "./ButtonLink";
 
 export default function Hero({ personal, quickStats }) {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleCategorySelect = (e, category) => {
+    e.preventDefault();
+    setIsDropdownOpen(false);
+    window.dispatchEvent(new CustomEvent('knowledgeHubCategorySelect', { detail: category }));
+  };
+
   const socialButtons = [
     { label: "Download Resume", href: personal.resumeFile, icon: "download", download: true },
     { label: "Contact Me", href: "#contact", icon: "arrow" },
@@ -23,10 +49,10 @@ export default function Hero({ personal, quickStats }) {
   }
 
   return (
-    <section id="home" className="relative overflow-hidden pt-6 sm:pt-8">
+    <section id="home" className="relative overflow-hidden pt-8 sm:pt-10">
       <div className="hero-orb hero-orb-left" />
       <div className="hero-orb hero-orb-right" />
-      <div className="mx-auto grid max-w-7xl gap-8 px-6 pb-6 pt-4 lg:grid-cols-[1.35fr_0.65fr] lg:px-8 lg:pb-8 lg:pt-6">
+      <div className="mx-auto grid max-w-7xl gap-8 px-6 pb-10 pt-6 lg:grid-cols-[1.2fr_0.8fr] lg:px-8 lg:pb-16 lg:pt-10">
         <div className="relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 18 }}
@@ -75,11 +101,11 @@ export default function Hero({ personal, quickStats }) {
               <MapPin size={16} />
               {personal.location}
             </span>
-            <a href={`mailto:${personal.email}`} className="inline-flex items-center gap-2 hover:text-[color:var(--lux-gold)] transition">
+            <span className="inline-flex items-center gap-2">
               <Mail size={16} />
               {personal.email}
-            </a>
-            <span className="w-full inline-flex items-center gap-2">
+            </span>
+            <span className="inline-flex items-center gap-2">
               <BriefcaseBusiness size={16} />
               Backend systems | enterprise finance | distributed services
             </span>
@@ -110,20 +136,75 @@ export default function Hero({ personal, quickStats }) {
               </ButtonLink>
             ))}
           </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.44 }}
+            className="mt-8 max-w-2xl text-sm theme-muted"
+          >
+            Targeting senior backend engineering, microservices, platform, and cloud modernization roles where
+            business impact, reliability, and architectural thinking matter.
+          </motion.p>
         </div>
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative z-10"
+          className="relative z-10 flex flex-col justify-center lg:-mt-32 lg:items-end"
         >
-          <div className="mx-auto max-w-[280px] sm:max-w-[230px] lg:max-w-[220px] overflow-hidden rounded-[28px] border border-[color:var(--lux-border)] bg-[color:var(--lux-panel)] p-2 sm:p-1.5 lg:p-1 shadow-panel">
-            <img
-              src={personal.profilePhoto}
-              alt="Professional headshot of Nikhil Gadhwal"
-              className="h-auto w-full rounded-[26px] object-cover"
-            />
+          <div className="glass-panel w-full max-w-md p-6 sm:p-8">
+            <div className="mb-8 flex items-center gap-4">
+              <div className="rounded-2xl bg-[color:color-mix(in_srgb,var(--lux-gold)_10%,transparent)] p-3 text-[color:var(--lux-gold)]">
+                <Brain size={28} />
+              </div>
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-accent-500">Learn & Practice</p>
+                <h3 className="theme-text mt-1 font-display text-2xl font-bold">Knowledge Hub</h3>
+              </div>
+            </div>
+
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="w-full flex items-center justify-between rounded-xl border border-[color:var(--lux-border-strong)] bg-[color:var(--lux-panel-strong)] px-5 py-4 text-sm font-semibold theme-text transition hover:border-[color:var(--lux-gold)] focus:outline-none"
+              >
+                <span>Select a topic to explore...</span>
+                <ChevronDown size={18} className={`transition-transform duration-300 ${isDropdownOpen ? "rotate-180" : ""}`} />
+              </button>
+
+              {isDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="absolute left-0 right-0 top-full z-20 mt-3 overflow-hidden rounded-xl border border-[color:var(--lux-border)] bg-[color:var(--lux-panel)] shadow-panel"
+                >
+                  <a
+                    href="#interview-prep"
+                    onClick={(e) => handleCategorySelect(e, "Java")}
+                    className="flex items-center gap-3 border-b border-[color:var(--lux-border)] px-5 py-4 text-sm font-medium theme-text transition-colors hover:bg-[color:var(--lux-panel-strong)]"
+                  >
+                    <Coffee size={18} className="text-[color:var(--lux-gold)]" />
+                    <div>
+                      <span className="block font-bold">Java Deep-Dive</span>
+                      <span className="mt-0.5 block text-xs theme-muted">84 Core & Advanced Questions</span>
+                    </div>
+                  </a>
+                  <a
+                    href="#interview-prep"
+                    onClick={(e) => handleCategorySelect(e, "Spring Boot")}
+                    className="flex items-center gap-3 px-5 py-4 text-sm font-medium theme-text transition-colors hover:bg-[color:var(--lux-panel-strong)]"
+                  >
+                    <Terminal size={18} className="text-[color:var(--lux-gold)]" />
+                    <div>
+                      <span className="block font-bold">Spring Boot Deep-Dive</span>
+                      <span className="mt-0.5 block text-xs theme-muted">85 Architecture & Web Questions</span>
+                    </div>
+                  </a>
+                </motion.div>
+              )}
+            </div>
           </div>
         </motion.div>
       </div>

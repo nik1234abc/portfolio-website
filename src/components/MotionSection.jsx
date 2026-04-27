@@ -16,7 +16,7 @@ export default function MotionSection({ id, className = "", children }) {
   return (
     <motion.section
       id={id}
-      className={`scroll-mt-16 ${className}`}
+      className={className}
       variants={container}
       initial="hidden"
       whileInView="visible"

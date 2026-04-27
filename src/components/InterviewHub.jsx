@@ -67,7 +67,7 @@ const InterviewHub = () => {
   useEffect(() => {
     const handleNavClick = (e) => {
       const target = e.target.closest("a");
-      if (target && target.getAttribute("href") === "#interview-prep") {
+      if (target && target.getAttribute("href") === "#interview-prep" && target.classList.contains("theme-nav-link")) {
         setActiveCategory(null);
         setActiveTopic(null);
         setCurrentIndex(0);
@@ -77,6 +77,22 @@ const InterviewHub = () => {
     };
     document.addEventListener("click", handleNavClick);
     return () => document.removeEventListener("click", handleNavClick);
+  }, []);
+
+  // Listen for direct category selections from the Hero dropdown
+  useEffect(() => {
+    const handleCategorySelect = (e) => {
+      const category = e.detail;
+      setActiveCategory(category);
+      setActiveTopic(null);
+      setCurrentIndex(0);
+      setIsRevealed(false);
+      setActiveFollowUp(null);
+      document.getElementById("interview-prep")?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    window.addEventListener("knowledgeHubCategorySelect", handleCategorySelect);
+    return () => window.removeEventListener("knowledgeHubCategorySelect", handleCategorySelect);
   }, []);
 
   // Data Processing
