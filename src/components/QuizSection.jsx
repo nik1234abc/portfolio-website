@@ -16,6 +16,7 @@ export default function QuizSection({ onBack }) {
   const [isCorrect, setIsCorrect] = useState(null);
   const [score, setScore] = useState({ correct: 0, wrong: 0, retried: 0 });
   const [retryMode, setRetryMode] = useState(false);
+  const [answers, setAnswers] = useState({}); // { [idx]: { given, correct } }
   const inputRef = useRef(null);
 
   const allSelected = selectedTopics.size === quizTopics.length;
@@ -39,6 +40,7 @@ export default function QuizSection({ onBack }) {
     setQuestions(pool);
     setCurrentIdx(0);
     setScore({ correct: 0, wrong: 0, retried: 0 });
+    setAnswers({});
     setSubmitted(false);
     setSelectedOption(null);
     setInputValue("");
@@ -62,8 +64,12 @@ export default function QuizSection({ onBack }) {
     const correct = checkAnswer(answer);
     setIsCorrect(correct);
     setSubmitted(true);
+    setAnswers((prev) => ({ ...prev, [currentIdx]: { given: answer, correct } }));
     if (correct) {
       setScore((s) => ({ ...s, correct: s.correct + 1 }));
+      if (currentQ.type === "mcq") {
+        setTimeout(() => handleNext(), 800);
+      }
     } else {
       if (!retryMode) setScore((s) => ({ ...s, wrong: s.wrong + 1 }));
     }
@@ -84,11 +90,25 @@ export default function QuizSection({ onBack }) {
       setPhase("summary");
       return;
     }
-    setCurrentIdx((i) => i + 1);
-    setSubmitted(false);
-    setSelectedOption(null);
-    setInputValue("");
-    setIsCorrect(null);
+    const nextIdx = currentIdx + 1;
+    const prevAnswer = answers[nextIdx];
+    setCurrentIdx(nextIdx);
+    setSubmitted(prevAnswer ? true : false);
+    setSelectedOption(prevAnswer ? prevAnswer.given : null);
+    setInputValue(prevAnswer ? prevAnswer.given : "");
+    setIsCorrect(prevAnswer ? prevAnswer.correct : null);
+    setRetryMode(false);
+  };
+
+  const handlePrev = () => {
+    if (currentIdx === 0) return;
+    const prevIdx = currentIdx - 1;
+    const prevAnswer = answers[prevIdx];
+    setCurrentIdx(prevIdx);
+    setSubmitted(prevAnswer ? true : false);
+    setSelectedOption(prevAnswer ? prevAnswer.given : null);
+    setInputValue(prevAnswer ? prevAnswer.given : "");
+    setIsCorrect(prevAnswer ? prevAnswer.correct : null);
     setRetryMode(false);
   };
 
@@ -206,6 +226,41 @@ export default function QuizSection({ onBack }) {
             <p className="theme-muted text-sm">Accuracy</p>
           </div>
 
+          {/* Question review */}
+          <div className="text-left mb-8 space-y-3">
+            <p className="text-xs font-bold uppercase tracking-widest text-accent-500 mb-4">Question Review</p>
+            {questions.map((q, idx) => {
+              const ans = answers[idx];
+              return (
+                <div key={idx} className={`rounded-xl border p-4 ${
+                  !ans ? "border-[color:var(--lux-border)] opacity-50" :
+                  ans.correct ? "border-green-500/40 bg-green-500/5" : "border-red-500/40 bg-red-500/5"
+                }`}>
+                  <div className="flex items-start gap-3">
+                    {ans ? (
+                      ans.correct
+                        ? <CheckCircle size={16} className="text-green-400 shrink-0 mt-0.5" />
+                        : <XCircle size={16} className="text-red-400 shrink-0 mt-0.5" />
+                    ) : <span className="h-4 w-4 rounded-full border border-gray-600 shrink-0 mt-0.5" />}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm theme-text font-medium leading-snug">{q.question}</p>
+                      {ans && !ans.correct && (
+                        <p className="text-xs mt-1.5">
+                          <span className="text-red-400">Your answer: {ans.given}</span>
+                          <span className="mx-2 text-gray-600">·</span>
+                          <span className="text-green-400">Correct: {q.answer}</span>
+                        </p>
+                      )}
+                      {ans && ans.correct && (
+                        <p className="text-xs mt-1 text-green-400">{q.answer}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-3">
             <button onClick={startQuiz} className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-[color:var(--lux-gold)] px-5 py-3 text-sm font-bold text-[#16110c] shadow-glow hover:brightness-105">
               <RefreshCw size={16} /> Retry Same Topics
@@ -232,10 +287,16 @@ export default function QuizSection({ onBack }) {
         <button onClick={() => setPhase("summary")} className="flex items-center text-red-400 hover:text-red-300 font-medium transition-colors bg-panel px-4 py-2 rounded-lg border border-red-500/30 hover:border-red-500/60 text-sm">
           <span className="mr-2 text-lg leading-none">✕</span>End Quiz
         </button>
-        <div className="flex items-center gap-3 text-sm font-semibold">
-          <span className="text-green-400 flex items-center gap-1"><CheckCircle size={14} /> {score.correct}</span>
-          <span className="text-red-400 flex items-center gap-1"><XCircle size={14} /> {score.wrong}</span>
-          <span className="text-yellow-400 flex items-center gap-1"><RefreshCw size={14} /> {score.retried}</span>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handlePrev}
+            disabled={currentIdx === 0}
+            className="px-3 py-1.5 rounded-lg border border-[color:var(--lux-border)] text-sm theme-muted hover:border-accent-500 disabled:opacity-30 disabled:cursor-not-allowed transition"
+          >← Prev</button>
+          <div className="flex items-center gap-3 text-sm font-semibold">
+            <span className="text-green-400 flex items-center gap-1"><CheckCircle size={14} /> {score.correct}</span>
+            <span className="text-red-400 flex items-center gap-1"><XCircle size={14} /> {score.wrong}</span>
+          </div>
         </div>
       </div>
 
