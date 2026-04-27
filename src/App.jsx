@@ -74,11 +74,15 @@ function App() {
       <Navbar
         theme={theme}
         toggleTheme={toggleTheme}
-        onViewResumeClick={() => setIsResumeModalOpen(true)}
+        resumeFile={portfolio.personal.resumeFile}
       />
 
       <main>
-        <Hero personal={portfolio.personal} quickStats={portfolio.quickStats} />
+        <Hero 
+          personal={portfolio.personal} 
+          quickStats={portfolio.quickStats} 
+          onViewResumeClick={() => setIsResumeModalOpen(true)}
+        />
         <AboutSection personal={portfolio.personal} focusAreas={portfolio.focusAreas} />
         <SkillsSection skills={portfolio.skills} />
         <ProjectsSection projects={portfolio.projects} />

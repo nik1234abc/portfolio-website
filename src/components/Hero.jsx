@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import ButtonLink from "./ButtonLink";
 
-export default function Hero({ personal, quickStats }) {
+export default function Hero({ personal, quickStats, onViewResumeClick }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -41,7 +41,7 @@ export default function Hero({ personal, quickStats }) {
   };
 
   const socialButtons = [
-    { label: "Download Resume", href: personal.resumeFile, icon: "download", download: true },
+    { label: "View Resume", onClick: onViewResumeClick, icon: "arrow" },
     { label: "Contact Me", href: "#contact", icon: "arrow" },
     { label: "LinkedIn", href: personal.linkedin, icon: "arrow" }
   ];
@@ -125,6 +125,7 @@ export default function Hero({ personal, quickStats }) {
               <ButtonLink
                 key={button.label}
                 href={button.href}
+                onClick={button.onClick}
                 icon={button.icon}
                 leadingIcon={
                   button.label === "LinkedIn" ? (
@@ -134,7 +135,7 @@ export default function Hero({ personal, quickStats }) {
                   ) : null
                 }
                 download={button.download}
-                variant={button.label === "Download Resume" ? "primary" : "secondary"}
+                variant={button.label === "View Resume" ? "primary" : "secondary"}
               >
                 {button.label}
               </ButtonLink>

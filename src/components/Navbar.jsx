@@ -10,7 +10,7 @@ const links = [
   { label: "Contact", href: "#contact" }
 ];
 
-export default function Navbar({ theme, toggleTheme, onViewResumeClick }) {
+export default function Navbar({ theme, toggleTheme, resumeFile }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -40,13 +40,13 @@ export default function Navbar({ theme, toggleTheme, onViewResumeClick }) {
         </div>
 
         <div className="hidden items-center gap-4 lg:flex">
-          <button
-            type="button"
-            onClick={onViewResumeClick}
+          <a
+            href={resumeFile}
+            download
             className="inline-flex items-center rounded-full border border-[color:var(--lux-border)] bg-[color:color-mix(in_srgb,var(--lux-panel-soft)_82%,transparent)] px-4 py-2 text-sm font-semibold theme-text transition hover:border-[color:var(--lux-border-strong)] hover:text-[color:var(--lux-gold)]"
           >
-            View Resume
-          </button>
+            Download Resume
+          </a>
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
         </div>
 
@@ -76,16 +76,16 @@ export default function Navbar({ theme, toggleTheme, onViewResumeClick }) {
                 {link.label}
               </a>
             ))}
-            <button
-              type="button"
+            <a
+              href={resumeFile}
+              download
               onClick={() => {
                 setOpen(false);
-                onViewResumeClick();
               }}
               className="mt-2 inline-flex w-fit items-center rounded-full border border-[color:var(--lux-border)] bg-[color:color-mix(in_srgb,var(--lux-panel-soft)_82%,transparent)] px-5 py-2.5 text-sm font-semibold theme-text transition hover:border-[color:var(--lux-border-strong)] hover:text-[color:var(--lux-gold)]"
             >
-              View Resume
-            </button>
+              Download Resume
+            </a>
           </div>
         </div>
       ) : null}

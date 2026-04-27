@@ -5,6 +5,7 @@ export default function ButtonLink({
   children,
   variant = "primary",
   icon = "arrow",
+  onClick,
   leadingIcon = null,
   disabled = false,
   download = false
@@ -29,6 +30,20 @@ export default function ButtonLink({
       >
         {children}
       </span>
+    );
+  }
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={`${shared} ${variants[variant]}`}
+      >
+        {leadingIcon}
+        {children}
+        {iconNode}
+      </button>
     );
   }
 
