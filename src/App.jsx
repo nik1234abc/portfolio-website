@@ -4,6 +4,7 @@ import AboutSection from "./components/AboutSection";
 import ContactSection from "./components/ContactSection";
 import CredentialsSection from "./components/CredentialsSection";
 import Footer from "./components/Footer";
+import InterviewHub from "./components/InterviewHub";
 import Hero from "./components/Hero";
 import Navbar from "./components/Navbar";
 import ProjectsSection from "./components/ProjectsSection";
@@ -77,6 +78,7 @@ function App() {
           certifications={portfolio.certifications}
           achievements={portfolio.achievements}
         />
+        <InterviewHub />
         <ContactSection personal={portfolio.personal} />
       </main>
 
