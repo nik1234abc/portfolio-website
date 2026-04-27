@@ -78,7 +78,6 @@ export const portfolio = {
     title: "Java Backend Developer | Spring Boot | Microservices | AWS",
     location: "New Delhi, India",
     email: "gadhwalnikhil@gmail.com",
-    phone: "+91 8340674865",
     linkedin: "https://www.linkedin.com/in/nikhil-gadhwal-1b8688138/",
     github: "https://github.com/nik1234abc",
     summary:
@@ -89,34 +88,11 @@ export const portfolio = {
       "Feel free to connect for backend engineering, cloud architecture, technology discussions, or simply to explore the work I’m building.",
     resumeFile: "/Nikhil_Gadhwal_Java_Backend_Developer.pdf"
   },
-  heroHighlights: [
-    "4+ years in enterprise backend engineering",
-    "Microservices, APIs, cloud modernization",
-    "Open to relocation and remote opportunities"
-  ],
   quickStats: [
     { label: "Experience", value: "4+ years", note: "Enterprise backend engineering" },
     { label: "Microservices modernized", value: "9", note: "Java 8 to Java 21 migration" },
     { label: "Efficiency gains", value: "50-70%", note: "Across invoicing and regional automation" },
     { label: "Domain", value: "Billing + finance", note: "Secure, multi-region workflows" }
-  ],
-  recruiterCards: [
-    {
-      title: "Who is he?",
-      text: "A backend engineer trusted with enterprise financial systems, modernization work, and production-critical service ownership."
-    },
-    {
-      title: "What impact has he delivered?",
-      text: "Reduced manual billing effort, automated regional correction flows, and improved operational efficiency by up to 70%."
-    },
-    {
-      title: "Why trust him with scale?",
-      text: "Experience across microservices architecture, batch processing, async messaging, production incidents, and cloud-native delivery."
-    },
-    {
-      title: "Is he globally mobile?",
-      text: "Open to relocation and remote opportunities, with communication and delivery language suited to India, US, UK, and global engineering teams."
-    }
   ],
   focusAreas: [
     "Scalable systems",
@@ -251,21 +227,6 @@ export const portfolio = {
       ],
       stack: ["Java", "Spring Boot", "Rule Modules", "PostgreSQL", "REST APIs"]
     },
-    {
-      title: "Production Support & System Reliability Engineering",
-      brief: "Maintained and optimized critical enterprise financial systems through issue resolution, monitoring, and continuous operational improvements.",
-      reason:
-        "Production-critical services required high reliability, rapid incident resolution, and operational continuity.",
-      solution:
-        "Handled root cause analysis, deployment stability, issue remediation, and reliability improvements across distributed services.",
-      benefits: [
-        "Improved uptime",
-        "Faster issue resolution",
-        "Strengthened system resilience",
-        "Enhanced enterprise trust"
-      ],
-      stack: ["Java", "SQL", "Jenkins", "Monitoring", "Microservices"]
-    }
   ],
   certifications: [
     {
@@ -283,33 +244,6 @@ export const portfolio = {
     "Recognized as part of a Team of the Year award for exceptional team performance and successful delivery of key initiatives.",
     "Received A Band performance ratings for three consecutive years at Tata Consultancy Services."
   ],
-  targetRoles: [
-    "Senior Java Backend Developer",
-    "Spring Boot / Microservices Engineer",
-    "Cloud and Platform Engineering roles",
-    "Fintech and enterprise product backend opportunities"
-  ],
-  insights: [
-    {
-      title: "Java 21 Migration Lessons from Production Microservices",
-      summary:
-        "A practical engineering breakdown of upgrading enterprise services, validating compatibility, and reducing legacy platform risk without disrupting production.",
-      tags: ["Java 21", "Modernization", "Production Engineering"]
-    },
-    {
-      title: "Spring Boot Best Practices for Enterprise Financial Services",
-      summary:
-        "Patterns for structuring service boundaries, validations, observability, and secure API behavior in audit-sensitive backend systems.",
-      tags: ["Spring Boot", "Architecture", "Secure APIs"]
-    },
-    {
-      title: "Kafka and Async Processing Notes for Backend Interviews",
-      summary:
-        "A high-signal perspective on event-driven workflows, fault isolation, consumer behavior, and scaling asynchronous financial operations.",
-      tags: ["Kafka", "Distributed Systems", "Interview Prep"]
-    }
-  ]
-  ,
   interviewHub: {
     categories: ["Java", "Spring Boot", "REST APIs", "Kafka", "Microservices", "System Design"],
     learnerCategories: [],

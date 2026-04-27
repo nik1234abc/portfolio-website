@@ -1,68 +1,19 @@
-import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import {
-  Brain,
   BriefcaseBusiness,
-  ChevronDown,
-  Coffee,
-  Github,
-  Globe2,
   Linkedin,
   Mail,
   MapPin,
   ShieldCheck,
-  Terminal,
-  Layers,
-  Radio,
-  Network,
-  Code2,
-  Cpu
 } from "lucide-react";
 import ButtonLink from "./ButtonLink";
 
 export default function Hero({ personal, quickStats, onViewResumeClick }) {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [dropUp, setDropUp] = useState(false);
-  const dropdownRef = useRef(null);
-  const buttonRef = useRef(null);
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("touchstart", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("touchstart", handleClickOutside);
-    };
-  }, []);
-
-  const handleCategorySelect = (e, category) => {
-    e.preventDefault();
-    setIsDropdownOpen(false);
-    window.dispatchEvent(new CustomEvent('knowledgeHubCategorySelect', { detail: category }));
-  };
-
-  const handleToggleDropdown = () => {
-    if (!isDropdownOpen && buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      setDropUp(window.innerHeight - rect.bottom < 420);
-    }
-    setIsDropdownOpen(prev => !prev);
-  };
-
   const socialButtons = [
     { label: "View Resume", onClick: onViewResumeClick, icon: "arrow" },
     { label: "Contact Me", href: "#contact", icon: "arrow" },
-    { label: "LinkedIn", href: personal.linkedin, icon: "arrow" }
+    { label: "LinkedIn", href: personal.linkedin, icon: "arrow" },
   ];
-
-  if (personal.github) {
-    socialButtons.push({ label: "GitHub", href: personal.github, icon: "arrow" });
-  }
 
   return (
     <section id="home" className="relative pt-8 sm:pt-10">
@@ -70,7 +21,8 @@ export default function Hero({ personal, quickStats, onViewResumeClick }) {
         <div className="hero-orb hero-orb-left" />
         <div className="hero-orb hero-orb-right" />
       </div>
-      <div className="mx-auto grid max-w-7xl gap-8 px-6 pb-10 pt-6 lg:grid-cols-[1.2fr_0.8fr] lg:px-8 lg:pb-16 lg:pt-10">
+
+      <div className="mx-auto max-w-7xl px-6 pb-10 pt-6 lg:px-8 lg:pb-16 lg:pt-10">
         <div className="relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 18 }}
@@ -142,11 +94,7 @@ export default function Hero({ personal, quickStats, onViewResumeClick }) {
                 onClick={button.onClick}
                 icon={button.icon}
                 leadingIcon={
-                  button.label === "LinkedIn" ? (
-                    <Linkedin size={16} />
-                  ) : button.label === "GitHub" ? (
-                    <Github size={16} />
-                  ) : null
+                  button.label === "LinkedIn" ? <Linkedin size={16} /> : null
                 }
                 download={button.download}
                 variant={button.label === "View Resume" ? "primary" : "secondary"}
@@ -166,72 +114,6 @@ export default function Hero({ personal, quickStats, onViewResumeClick }) {
             business impact, reliability, and architectural thinking matter.
           </motion.p>
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative z-10 flex flex-col justify-center lg:-mt-32 lg:items-end"
-        >
-          <div className="glass-panel w-full max-w-md p-5 sm:p-8">
-            <div className="mb-8 flex items-center gap-4">
-              <div className="rounded-2xl bg-[color:color-mix(in_srgb,var(--lux-gold)_10%,transparent)] p-3 text-[color:var(--lux-gold)]">
-                <Brain size={28} />
-              </div>
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-accent-500">Learn & Practice</p>
-                <a
-                  href="#interview-prep"
-                  className="mt-1 font-display text-2xl font-bold theme-text hover:text-[color:var(--lux-gold)] transition-colors duration-200 block"
-                >
-                  Knowledge Hub
-                </a>
-              </div>
-            </div>
-
-            <div className="relative" ref={dropdownRef}>
-              <button
-                ref={buttonRef}
-                onClick={handleToggleDropdown}
-                className="w-full flex items-center justify-between rounded-xl border border-[color:var(--lux-border-strong)] bg-[color:var(--lux-panel-strong)] px-5 py-4 text-sm font-semibold theme-text transition hover:border-[color:var(--lux-gold)] focus:outline-none"
-              >
-                <span>Select a topic to explore...</span>
-                <ChevronDown size={18} className={`transition-transform duration-300 ${isDropdownOpen ? "rotate-180" : ""}`} />
-              </button>
-
-              {isDropdownOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="absolute left-0 right-0 top-full z-20 mt-2 overflow-y-auto rounded-xl border border-[color:var(--lux-border)] bg-[color:var(--lux-panel)] shadow-panel max-h-[60vh]"
-                >
-                  {[
-                    { label: "Java Deep-Dive", category: "Java", icon: Coffee },
-                    { label: "Spring Boot", category: "Spring Boot", icon: Terminal },
-                    { label: "REST APIs", category: "REST APIs", icon: Globe2 },
-                    { label: "Kafka", category: "Kafka", icon: Radio },
-                    { label: "Microservices", category: "Microservices", icon: Network },
-                    { label: "Coding Patterns", category: "Coding Patterns", icon: Code2 },
-                    { label: "Quick Quiz (MCQ)", category: "Quick Quiz", icon: Layers },
-                    { label: "Application Flow", category: "Application Flow", icon: Cpu },
-                  ].map(({ label, category, icon: Icon }, i, arr) => (
-                    <a
-                      key={category}
-                      href="#interview-prep"
-                      onClick={(e) => handleCategorySelect(e, category)}
-                      className={`flex items-center gap-3 px-4 py-2.5 text-sm font-medium theme-text transition-colors hover:bg-[color:var(--lux-panel-strong)] ${
-                        i < arr.length - 1 ? "border-b border-[color:var(--lux-border)]" : ""
-                      }`}
-                    >
-                      <Icon size={15} className="text-[color:var(--lux-gold)] shrink-0" />
-                      <span>{label}</span>
-                    </a>
-                  ))}
-                </motion.div>
-              )}
-            </div>
-          </div>
-        </motion.div>
       </div>
     </section>
   );

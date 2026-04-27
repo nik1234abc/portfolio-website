@@ -1,4 +1,5 @@
 import { useEffect, useState, lazy, Suspense } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import AboutSection from "./components/AboutSection";
@@ -12,8 +13,8 @@ import SkillsSection from "./components/SkillsSection";
 import { portfolio } from "./data/portfolio";
 import { useTheme } from "./hooks/useTheme";
 import { Home } from "lucide-react";
+import KnowledgeHubPage from "./pages/KnowledgeHubPage";
 
-const KnowledgeHub = lazy(() => import("./components/KnowledgeHub"));
 const ResumeModal = lazy(() => import("./components/ResumeModal"));
 
 function App() {
@@ -58,6 +59,17 @@ function App() {
   };
 
   return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/knowledge-hub" element={<KnowledgeHubPage />} />
+        <Route path="*" element={<HomePage theme={theme} toggleTheme={toggleTheme} isResumeModalOpen={isResumeModalOpen} setIsResumeModalOpen={setIsResumeModalOpen} personSchema={personSchema} />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+function HomePage({ theme, toggleTheme, isResumeModalOpen, setIsResumeModalOpen, personSchema }) {
+  return (
     <div className="page-shell">
       <Helmet>
         <html lang="en" />
@@ -99,9 +111,6 @@ function App() {
           certifications={portfolio.certifications}
           achievements={portfolio.achievements}
         />
-      <Suspense fallback={<div id="interview-prep" className="min-h-screen bg-surface" />}>
-        <KnowledgeHub />
-      </Suspense>
         <ContactSection personal={portfolio.personal} />
       </main>
 

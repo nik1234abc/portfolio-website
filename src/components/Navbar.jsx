@@ -1,28 +1,33 @@
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle";
 
-const links = [
-  { label: "About", href: "#about" },
-  { label: "Skills", href: "#skills" },
-  { label: "Projects", href: "#projects" },
-  { label: "Certifications", href: "#credentials" },
-  { label: "Contact", href: "#contact" }
+const portfolioLinks = [
+  { label: "About", href: "/#about" },
+  { label: "Skills", href: "/#skills" },
+  { label: "Projects", href: "/#projects" },
+  { label: "Certifications", href: "/#credentials" },
+  { label: "Contact", href: "/#contact" },
+  { label: "Knowledge Hub", href: "/knowledge-hub" },
+];
+
+const hubLinks = [
+  { label: "About", href: "/#about" },
+  { label: "Contact", href: "/#contact" }
 ];
 
 export default function Navbar({ theme, toggleTheme, resumeFile }) {
+  const location = useLocation();
+  const links = location.pathname === "/knowledge-hub" ? hubLinks : portfolioLinks;
   const [open, setOpen] = useState(false);
 
   return (
     <header className="theme-navbar sticky top-0 z-50 backdrop-blur-xl transition-colors duration-500">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
         <a 
-          href="#home" 
+          href="/"
           className="flex items-center gap-3"
-          onClick={(e) => {
-            e.preventDefault();
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }}
         >
           <span className="brand-mark">NG</span>
           <div>

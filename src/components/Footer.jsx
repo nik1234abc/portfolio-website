@@ -1,37 +1,4 @@
-import { Github, Linkedin, Mail, Users } from "lucide-react";
-import { useState, useEffect } from "react";
-
-function VisitorCounter() {
-  const [count, setCount] = useState("...");
-
-  useEffect(() => {
-    const alreadyCounted = sessionStorage.getItem("visited");
-    const url = alreadyCounted
-      ? "https://api.counterapi.dev/v1/nikhilgadhwal-portfolio/visits"
-      : "https://api.counterapi.dev/v1/nikhilgadhwal-portfolio/visits/up";
-
-    fetch(url)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.count) {
-          setCount(data.count.toLocaleString());
-          if (!alreadyCounted) sessionStorage.setItem("visited", "1");
-        }
-      })
-      .catch(() => setCount(null));
-  }, []);
-
-  if (count === null) return null;
-
-  return (
-    <div className="flex items-center gap-2 text-xs theme-muted mt-3">
-      <Users size={13} className="text-accent-500 shrink-0" />
-      <span>
-        <span className="font-bold text-accent-400">{count}</span> developers visited
-      </span>
-    </div>
-  );
-}
+import { Linkedin, Mail } from "lucide-react";
 
 export default function Footer({ personal }) {
   const year = new Date().getFullYear();
@@ -47,9 +14,7 @@ export default function Footer({ personal }) {
           <p className="mt-2 text-sm theme-muted">
             Copyright {year} {personal.name}. All rights reserved.
           </p>
-          <div className="mt-3">
-            <VisitorCounter />
-          </div>
+
         </div>
 
         <div className="flex items-center gap-4">
@@ -69,17 +34,6 @@ export default function Footer({ personal }) {
           >
             <Linkedin size={18} />
           </a>
-          {personal.github ? (
-            <a
-              href={personal.github}
-              target="_blank"
-              rel="noreferrer"
-              className="lux-icon-button"
-              aria-label="Visit GitHub profile"
-            >
-              <Github size={18} />
-            </a>
-          ) : null}
         </div>
       </div>
     </footer>
