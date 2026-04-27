@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import AboutSection from "./components/AboutSection";
 import ContactSection from "./components/ContactSection";
 import CredentialsSection from "./components/CredentialsSection";
 import Footer from "./components/Footer";
-import InterviewHub from "./components/InterviewHub";
 import Hero from "./components/Hero";
 import Navbar from "./components/Navbar";
 import ProjectsSection from "./components/ProjectsSection";
@@ -13,7 +12,9 @@ import SkillsSection from "./components/SkillsSection";
 import { portfolio } from "./data/portfolio";
 import { useTheme } from "./hooks/useTheme";
 import { Home } from "lucide-react";
-import ResumeModal from "./components/ResumeModal";
+
+const InterviewHub = lazy(() => import("./components/InterviewHub"));
+const ResumeModal = lazy(() => import("./components/ResumeModal"));
 
 function App() {
   const { theme, toggleTheme } = useTheme();
@@ -43,6 +44,14 @@ function App() {
       "@type": "PostalAddress",
       addressLocality: "New Delhi",
       addressCountry: "IN"
+    },
+    worksFor: {
+      "@type": "Organization",
+      name: "Tata Consultancy Services"
+    },
+    alumniOf: {
+      "@type": "CollegeOrUniversity",
+      name: "Bengal College of Engineering and Technology"
     },
     sameAs: [portfolio.personal.linkedin, portfolio.personal.github].filter(Boolean),
     knowsAbout: portfolio.seo.keywords
@@ -90,7 +99,9 @@ function App() {
           certifications={portfolio.certifications}
           achievements={portfolio.achievements}
         />
+      <Suspense fallback={<div id="interview-prep" className="min-h-screen bg-surface" />}>
         <InterviewHub />
+      </Suspense>
         <ContactSection personal={portfolio.personal} />
       </main>
 
@@ -111,10 +122,12 @@ function App() {
 
       <AnimatePresence>
         {isResumeModalOpen && (
-          <ResumeModal
-            resumeFile={portfolio.personal.resumeFile}
-            onClose={() => setIsResumeModalOpen(false)}
-          />
+          <Suspense fallback={null}>
+            <ResumeModal
+              resumeFile={portfolio.personal.resumeFile}
+              onClose={() => setIsResumeModalOpen(false)}
+            />
+          </Suspense>
         )}
       </AnimatePresence>
     </div>

@@ -102,7 +102,7 @@ export default function InterviewPrepSection({ data }) {
                     onClick={() => setIsRevealed(true)}
                     className="inline-flex items-center gap-2 rounded-full bg-[color:var(--lux-panel-strong)] px-6 py-3 text-sm font-semibold theme-text transition hover:bg-[color:color-mix(in_srgb,var(--lux-gold)_10%,transparent)] hover:text-[color:var(--lux-gold)] border border-[color:var(--lux-border)] hover:border-[color:var(--lux-gold)]"
                   >
-                    Reveal Mentor Answer
+                    Reveal Answer
                   </button>
                 </motion.div>
               ) : (
