@@ -1275,6 +1275,53 @@ export const springBootInterview = {
         }
       ],
       keyPoints: ["Log analysis", "Metrics monitoring", "Thread dumps", "Heap analysis"]
-    }
+    },
+
+    // ─── VS QUESTIONS ─────────────────────────────────────────────────────────
+    {
+      id: 86, category: "Spring Boot", topic: "13. VS Questions",
+      question: "@RestController vs @Controller",
+      simpleAnswer: "@RestController = @Controller + @ResponseBody. It automatically serializes return values to JSON. @Controller is for MVC views (returns view names).",
+      explanation: "@Controller is the traditional MVC controller — methods return view names resolved by ViewResolver. @RestController is for REST APIs — every method's return value is written directly to the HTTP response body as JSON (via @ResponseBody). If you're building a REST API, always use @RestController.",
+      example: "@Controller: return 'home'; → renders home.html. @RestController: return user; → writes {\"id\":1,\"name\":\"John\"} to response body.",
+      followUps: [{ question: "Can you mix @Controller and @ResponseBody?", answer: "Yes — @Controller + @ResponseBody on a method is equivalent to @RestController. But @RestController is cleaner." }],
+      keyPoints: ["@RestController = @Controller + @ResponseBody", "@Controller: returns view names", "@RestController: returns JSON directly", "Use @RestController for REST APIs"]
+    },
+    {
+      id: 87, category: "Spring Boot", topic: "13. VS Questions",
+      question: "@PathVariable vs @RequestParam",
+      simpleAnswer: "@PathVariable extracts values from the URL path (/users/42). @RequestParam extracts values from query string (/users?id=42).",
+      explanation: "@PathVariable is used when the value is part of the URL structure — RESTful resource identifiers. @RequestParam is for optional filters, pagination, or search parameters in the query string. Both can have default values and be optional.",
+      example: "GET /users/42 → @PathVariable Long id = 42. GET /users?page=2&size=10 → @RequestParam int page = 2, @RequestParam int size = 10.",
+      followUps: [{ question: "Can @RequestParam have a default value?", answer: "Yes: @RequestParam(defaultValue = '0') int page — returns 0 if the parameter is not provided." }],
+      keyPoints: ["@PathVariable: from URL path /users/{id}", "@RequestParam: from query string ?key=value", "@PathVariable: required by default", "@RequestParam: can be optional with defaultValue"]
+    },
+    {
+      id: 88, category: "Spring Boot", topic: "13. VS Questions",
+      question: "EAGER vs LAZY loading in JPA",
+      simpleAnswer: "EAGER loading fetches related entities immediately with the parent. LAZY loading fetches them only when accessed.",
+      explanation: "EAGER: when you load an Order, all its OrderItems are loaded immediately in the same query (or a join). LAZY: OrderItems are loaded only when you call order.getItems() — a separate query fires at that point. LAZY is the default for @OneToMany and @ManyToMany. EAGER is default for @ManyToOne and @OneToOne.",
+      example: "EAGER: SELECT * FROM orders JOIN order_items — always loads items. LAZY: SELECT * FROM orders — items loaded only when accessed. LAZY can cause N+1 problem if not handled with JOIN FETCH.",
+      followUps: [{ question: "What is the N+1 problem?", answer: "Loading 100 orders with LAZY items fires 1 query for orders + 100 queries for items = 101 queries. Fix with JOIN FETCH or @EntityGraph." }],
+      keyPoints: ["EAGER: loads immediately, more data upfront", "LAZY: loads on access, better performance", "@OneToMany default: LAZY", "@ManyToOne default: EAGER", "LAZY can cause N+1 — use JOIN FETCH"]
+    },
+    {
+      id: 89, category: "Spring Boot", topic: "13. VS Questions",
+      question: "save() vs saveAndFlush() in Spring Data JPA",
+      simpleAnswer: "save() persists to the persistence context (may not hit DB immediately). saveAndFlush() immediately synchronizes with the database.",
+      explanation: "save() adds the entity to the JPA persistence context. The actual SQL INSERT/UPDATE may be batched and sent to DB at transaction commit or when Hibernate decides to flush. saveAndFlush() forces an immediate flush — the SQL is sent to DB right away within the same transaction. Use saveAndFlush() when you need to see the effect immediately (e.g., for a subsequent query in the same transaction).",
+      example: "save(): entity in memory, SQL at commit. saveAndFlush(): SQL fires immediately. Use saveAndFlush() when you need the generated ID or want to trigger DB constraints immediately.",
+      followUps: [{ question: "When should you use saveAndFlush()?", answer: "When you need the generated ID immediately, when testing with in-memory DB, or when a subsequent query in the same transaction needs to see the saved data." }],
+      keyPoints: ["save(): persists to context, SQL at flush/commit", "saveAndFlush(): immediate SQL to DB", "saveAndFlush() useful for immediate constraint checking", "save() is more efficient for batch operations"]
+    },
+    {
+      id: 90, category: "Spring Boot", topic: "13. VS Questions",
+      question: "PUT vs PATCH in REST APIs",
+      simpleAnswer: "PUT replaces the entire resource. PATCH partially updates only the specified fields.",
+      explanation: "PUT is idempotent — sending the same PUT request multiple times produces the same result. It replaces the full resource, so you must send all fields. PATCH updates only the fields you send — other fields remain unchanged. PATCH is more efficient for partial updates but requires careful implementation to be idempotent.",
+      example: "PUT /users/1 with {name:'John', email:'j@j.com', age:30} — replaces all fields. PATCH /users/1 with {email:'new@j.com'} — only email changes, name and age unchanged.",
+      followUps: [{ question: "Is PATCH idempotent?", answer: "Not necessarily. PUT is always idempotent. PATCH can be idempotent if implemented carefully, but it's not guaranteed by the HTTP spec." }],
+      keyPoints: ["PUT: full replacement, all fields required", "PATCH: partial update, only changed fields", "PUT: always idempotent", "PATCH: more efficient for partial updates"]
+    },
   ]
 };

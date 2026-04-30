@@ -18,7 +18,8 @@ const assignTopics = (questions) => {
       else if (q.id <= 64) q.topic = "8. Exception Handling";
       else if (q.id <= 73) q.topic = "9. Java 8 Features";
       else if (q.id <= 78) q.topic = "10. Keywords & Important Concepts";
-      else q.topic = "11. Advanced Concepts";
+      else if (q.id <= 90) q.topic = "11. Advanced Concepts";
+      else q.topic = "12. VS Questions";
     } else if (q.category === "Spring Boot") {
       if (q.id <= 10) q.topic = "1. Spring Core Basics";
       else if (q.id <= 19) q.topic = "2. Annotations & Configuration";
@@ -31,7 +32,8 @@ const assignTopics = (questions) => {
       else if (q.id <= 70) q.topic = "9. Spring Boot Advanced Concepts";
       else if (q.id <= 76) q.topic = "10. Microservices Basics";
       else if (q.id <= 79) q.topic = "11. Security Basics";
-      else q.topic = "12. Real-World / Practical Questions";
+      else if (q.id <= 85) q.topic = "12. Real-World / Practical Questions";
+      else q.topic = "13. VS Questions";
     } else if (q.category === "REST APIs") {
       if (q.id <= 9) q.topic = "1. REST Fundamentals";
       else if (q.id <= 19) q.topic = "2. HTTP Basics";
@@ -1735,7 +1737,81 @@ export const portfolio = {
           }
         ],
         keyPoints: ["Equal objects MUST have equal hash codes", "Unequal objects can share a hash code (Collision)", "Always override both together"]
-      }
+      },
+
+      // ─── 12. VS QUESTIONS ─────────────────────────────────────────────────
+      {
+        id: 91, category: "Java",
+        question: "ArrayList vs LinkedList — when to use which?",
+        simpleAnswer: "Use ArrayList for frequent reads (O(1) get), LinkedList for frequent insertions/deletions in the middle (O(1) add/remove with iterator).",
+        explanation: "ArrayList is backed by a dynamic array — random access is O(1) but inserting/removing in the middle is O(n) due to shifting. LinkedList is a doubly-linked list — random access is O(n) but add/remove at a known position is O(1). In practice, ArrayList is preferred for most use cases because of better cache locality.",
+        example: "ArrayList: userList.get(50) is instant. LinkedList: inserting at position 50 requires traversal. Use LinkedList only if you're doing many insertions/deletions at arbitrary positions.",
+        followUps: [{ question: "Which is faster for iteration?", answer: "ArrayList — contiguous memory means better CPU cache performance. LinkedList nodes are scattered in memory." }],
+        keyPoints: ["ArrayList: O(1) get, O(n) insert/delete", "LinkedList: O(n) get, O(1) insert/delete at known node", "ArrayList preferred in most cases", "LinkedList good for queue/deque implementations"]
+      },
+      {
+        id: 92, category: "Java",
+        question: "HashMap vs ConcurrentHashMap vs Hashtable",
+        simpleAnswer: "HashMap is not thread-safe. ConcurrentHashMap is thread-safe with segment-level locking (high concurrency). Hashtable is thread-safe but uses full method-level synchronization (slow).",
+        explanation: "HashMap allows null keys/values, not synchronized. Hashtable synchronizes every method — only one thread at a time, very slow. ConcurrentHashMap divides the map into segments (Java 7) or uses CAS operations (Java 8+) — multiple threads can read/write different segments simultaneously.",
+        example: "Single-threaded: HashMap. Multi-threaded reads/writes: ConcurrentHashMap. Never use Hashtable in new code — it's legacy.",
+        followUps: [{ question: "Can ConcurrentHashMap have null keys?", answer: "No. Neither keys nor values can be null in ConcurrentHashMap. This is intentional — null would be ambiguous in concurrent contexts." }],
+        keyPoints: ["HashMap: not thread-safe, allows null", "ConcurrentHashMap: thread-safe, high concurrency, no null", "Hashtable: legacy, full synchronization, slow", "Use ConcurrentHashMap for concurrent access"]
+      },
+      {
+        id: 93, category: "Java",
+        question: "Abstract class vs Interface — when to use which?",
+        simpleAnswer: "Use abstract class when classes share common state/behavior (IS-A). Use interface to define a contract/capability that unrelated classes can implement (CAN-DO).",
+        explanation: "Abstract class can have state (fields), constructors, and concrete methods. A class can extend only one abstract class. Interface defines a contract — no state (before Java 8), multiple interfaces can be implemented. Java 8 added default/static methods to interfaces. Java 9 added private methods.",
+        example: "Abstract class: Vehicle (has speed, fuel fields). Interface: Flyable, Swimmable (capabilities). A FlyingCar can implement both Flyable and Drivable but can only extend one class.",
+        followUps: [{ question: "Can an interface have a constructor?", answer: "No. Interfaces cannot have constructors because they cannot be instantiated directly." }],
+        keyPoints: ["Abstract class: shared state + IS-A", "Interface: contract + CAN-DO", "One abstract class, multiple interfaces", "Java 8+: interfaces can have default methods"]
+      },
+      {
+        id: 94, category: "Java",
+        question: "Checked vs Unchecked Exceptions",
+        simpleAnswer: "Checked exceptions must be declared or caught at compile time (IOException). Unchecked exceptions (RuntimeException) don't need to be declared.",
+        explanation: "Checked exceptions extend Exception (not RuntimeException) — the compiler forces you to handle them. They represent recoverable conditions (file not found, network error). Unchecked exceptions extend RuntimeException — they represent programming errors (null pointer, array index out of bounds) that shouldn't be caught in normal flow.",
+        example: "Checked: FileNotFoundException when reading a file — you must catch it or declare throws. Unchecked: NullPointerException — indicates a bug, not a recoverable condition.",
+        followUps: [{ question: "Should you catch RuntimeException?", answer: "Generally no — they indicate bugs. Fix the root cause instead of catching them. Exception: top-level handlers for logging." }],
+        keyPoints: ["Checked: compile-time enforcement, recoverable", "Unchecked: runtime, programming errors", "Checked extends Exception", "Unchecked extends RuntimeException"]
+      },
+      {
+        id: 95, category: "Java",
+        question: "String vs StringBuilder vs StringBuffer",
+        simpleAnswer: "String is immutable. StringBuilder is mutable and fast (not thread-safe). StringBuffer is mutable and thread-safe (synchronized, slower).",
+        explanation: "Every String operation creates a new object — expensive in loops. StringBuilder modifies the same object in place — use for string concatenation in loops. StringBuffer is like StringBuilder but synchronized — use only when multiple threads share the same builder (rare).",
+        example: "Bad: String s = ''; for(int i=0; i<1000; i++) s += i; // creates 1000 objects. Good: StringBuilder sb = new StringBuilder(); for(int i=0; i<1000; i++) sb.append(i);",
+        followUps: [{ question: "Is String really immutable?", answer: "Yes — the char array inside String is final. Even reflection-based modification breaks the String pool contract." }],
+        keyPoints: ["String: immutable, thread-safe, String Pool", "StringBuilder: mutable, fast, not thread-safe", "StringBuffer: mutable, thread-safe, slower", "Use StringBuilder for concatenation in loops"]
+      },
+      {
+        id: 96, category: "Java",
+        question: "== vs equals() in Java",
+        simpleAnswer: "== compares object references (memory address). equals() compares object content (logical equality).",
+        explanation: "For primitives, == compares values. For objects, == checks if both variables point to the same memory location. equals() is overridden in String, Integer, etc. to compare content. If you don't override equals(), it defaults to == behavior.",
+        example: "String a = new String('hello'); String b = new String('hello'); a == b → false (different objects). a.equals(b) → true (same content). String literals: 'hello' == 'hello' → true (String Pool reuse).",
+        followUps: [{ question: "What happens if you don't override equals()?", answer: "The default Object.equals() uses == — two different objects are never equal even if they have the same data." }],
+        keyPoints: ["==: reference equality (memory address)", "equals(): content/logical equality", "Always override equals() with hashCode()", "String literals share pool — == may work but don't rely on it"]
+      },
+      {
+        id: 97, category: "Java",
+        question: "Comparable vs Comparator",
+        simpleAnswer: "Comparable defines natural ordering inside the class (compareTo). Comparator defines external custom ordering (compare) without modifying the class.",
+        explanation: "Comparable is implemented by the class itself — one natural order. Comparator is a separate class/lambda — multiple orderings possible. Collections.sort() uses Comparable by default. You pass a Comparator for custom sorting.",
+        example: "Employee implements Comparable<Employee> { compareTo by salary }. Separate Comparator: Comparator.comparing(Employee::getName) for name-based sort.",
+        followUps: [{ question: "Can you have multiple sort orders with Comparable?", answer: "No — Comparable defines one natural order. Use Comparator for multiple orderings." }],
+        keyPoints: ["Comparable: natural order, inside class, compareTo()", "Comparator: custom order, external, compare()", "Comparable: one order per class", "Comparator: multiple orderings possible"]
+      },
+      {
+        id: 98, category: "Java",
+        question: "Stack vs Heap memory in Java",
+        simpleAnswer: "Stack stores method call frames and local variables (thread-specific, fast, LIFO). Heap stores all objects and class instances (shared across threads, GC managed).",
+        explanation: "Each thread has its own stack — when a method is called, a frame is pushed; when it returns, the frame is popped. Stack memory is automatically freed. Heap is shared — all objects live here and are managed by the Garbage Collector. Stack is much faster but limited in size (StackOverflowError on deep recursion).",
+        example: "int x = 5; → x lives on stack. User user = new User(); → user reference on stack, User object on heap. When method returns, x is gone. User object stays until GC collects it.",
+        followUps: [{ question: "What is StackOverflowError?", answer: "Thrown when the call stack exceeds its limit — usually caused by infinite recursion." }],
+        keyPoints: ["Stack: thread-local, LIFO, fast, auto-freed", "Heap: shared, GC-managed, all objects", "Primitives and references on stack", "Objects always on heap"]
+      },
     ].concat(springBootInterview.questions).concat(restApiInterview.questions).concat(kafkaInterview.questions).concat(microservicesInterview.questions).concat(systemDesign.questions))
   }
 };

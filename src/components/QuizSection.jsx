@@ -7,6 +7,26 @@ const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
 
 export default function QuizSection({ onBack }) {
   const [phase, setPhase] = useState("setup");
+  const [focusedTopicIdx, setFocusedTopicIdx] = useState(0);
+  const [focusedActionIdx, setFocusedActionIdx] = useState(0);
+
+  // Push history entry so browser back button closes the quiz
+  useEffect(() => {
+    history.pushState({ quizSection: true }, "");
+    const handlePopState = () => onBack();
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  // Backspace key on setup screen returns to Knowledge Hub
+  useEffect(() => {
+    if (phase !== "setup") return;
+    const handler = (e) => {
+      if (e.key === "Backspace" && !e.target.matches("input, textarea")) onBack();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [phase]);
   const [selectedTopics, setSelectedTopics] = useState(new Set());
   const [questions, setQuestions] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -16,7 +36,8 @@ export default function QuizSection({ onBack }) {
   const [isCorrect, setIsCorrect] = useState(null);
   const [score, setScore] = useState({ correct: 0, wrong: 0, retried: 0 });
   const [retryMode, setRetryMode] = useState(false);
-  const [answers, setAnswers] = useState({}); // { [idx]: { given, correct } }
+  const [answers, setAnswers] = useState({});
+  const [showQuitDialog, setShowQuitDialog] = useState(false);
   const inputRef = useRef(null);
 
   const allSelected = selectedTopics.size === quizTopics.length;
@@ -87,6 +108,7 @@ export default function QuizSection({ onBack }) {
 
   const handleNext = () => {
     if (currentIdx + 1 >= questions.length) {
+      setFocusedActionIdx(0);
       setPhase("summary");
       return;
     }
@@ -112,7 +134,37 @@ export default function QuizSection({ onBack }) {
     setRetryMode(false);
   };
 
-  // Keyboard: 1-4 selects MCQ option, Enter submits
+  // Setup screen: arrow keys navigate topics, Enter toggles, Tab/Enter on start button
+  useEffect(() => {
+    if (phase !== "setup") return;
+    const cols = window.innerWidth >= 640 ? 3 : 2;
+    const total = quizTopics.length;
+    const handler = (e) => {
+      // Don't intercept when a button/input has native focus — let the browser handle it
+      if (e.target.matches("input, textarea, button")) return;
+      if (e.key === "ArrowRight") { e.preventDefault(); setFocusedTopicIdx(i => (i + 1) % total); }
+      if (e.key === "ArrowLeft")  { e.preventDefault(); setFocusedTopicIdx(i => (i - 1 + total) % total); }
+      if (e.key === "ArrowDown")  { e.preventDefault(); setFocusedTopicIdx(i => Math.min(i + cols, total - 1)); }
+      if (e.key === "ArrowUp")    { e.preventDefault(); setFocusedTopicIdx(i => Math.max(i - cols, 0)); }
+      if (e.key === "Enter")      { toggleTopic(quizTopics[focusedTopicIdx]); }
+      if (e.key === "a" || e.key === "A") { toggleAll(); }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [phase, focusedTopicIdx, selectedTopics]);
+
+  // Summary screen: arrow keys navigate action buttons, Enter activates
+  useEffect(() => {
+    if (phase !== "summary") return;
+    const actions = [startQuiz, () => setPhase("setup"), onBack];
+    const handler = (e) => {
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); setFocusedActionIdx(i => (i + 1) % actions.length); }
+      if (e.key === "ArrowLeft"  || e.key === "ArrowUp")   { e.preventDefault(); setFocusedActionIdx(i => (i - 1 + actions.length) % actions.length); }
+      if (e.key === "Enter") { actions[focusedActionIdx](); }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [phase, focusedActionIdx, questions, selectedTopics]);
   useEffect(() => {
     if (phase !== "quiz" || submitted) return;
     const handler = (e) => {
@@ -159,24 +211,32 @@ export default function QuizSection({ onBack }) {
           <div className="flex items-center justify-between mb-4">
             <p className="text-xs font-bold uppercase tracking-widest text-accent-500">Select Topics</p>
             <button onClick={toggleAll} className="text-xs font-semibold text-accent-400 hover:text-accent-300 transition">
-              {allSelected ? "Deselect All" : "Select All"}
+              {allSelected ? "Deselect All" : "Select All"} <span className="opacity-50">(A)</span>
             </button>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {quizTopics.map((topic) => (
+            {quizTopics.map((topic, idx) => (
               <button
                 key={topic}
-                onClick={() => toggleTopic(topic)}
+                onClick={() => { setFocusedTopicIdx(idx); toggleTopic(topic); }}
+                onMouseEnter={() => setFocusedTopicIdx(idx)}
                 className={`rounded-xl px-4 py-3 text-sm font-semibold border transition-all duration-200 text-left ${
                   selectedTopics.has(topic)
                     ? "border-[color:var(--lux-gold)] bg-[color:color-mix(in_srgb,var(--lux-gold)_15%,transparent)] text-[color:var(--lux-gold)] shadow-glow"
                     : "bg-panel border-[color:var(--lux-border)] theme-muted hover:border-accent-500"
+                } ${
+                  focusedTopicIdx === idx && !selectedTopics.has(topic)
+                    ? "ring-2 ring-accent-500/60 border-accent-500"
+                    : focusedTopicIdx === idx
+                    ? "ring-2 ring-[color:var(--lux-gold)]/60"
+                    : ""
                 }`}
               >
                 {topic}
               </button>
             ))}
           </div>
+          <p className="text-xs theme-muted mt-4 opacity-50">Arrow keys to navigate · Enter to toggle · A to select all</p>
         </div>
 
         <div className="flex items-center justify-between mb-6 px-1">
@@ -197,14 +257,30 @@ export default function QuizSection({ onBack }) {
 
   // ── SUMMARY SCREEN ────────────────────────────────────────────────────────
   if (phase === "summary") {
+    const attemptedQuestions = questions.filter((_, idx) => answers[idx]);
     return (
       <div className="max-w-xl mx-auto w-full pb-8 px-4">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-panel p-8 text-center">
+
+          {/* ── Action buttons — TOP ── */}
+          <div className="flex flex-col sm:flex-row gap-3 mb-8">
+            <button onClick={startQuiz} className={`flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-[color:var(--lux-gold)] px-5 py-3 text-sm font-bold text-[#16110c] shadow-glow hover:brightness-105 ${focusedActionIdx === 0 ? "ring-2 ring-white/40" : ""}` }>
+              <RefreshCw size={16} /> Retry Same Topics
+            </button>
+            <button onClick={() => setPhase("setup")} className={`flex-1 inline-flex items-center justify-center gap-2 rounded-full border px-5 py-3 text-sm font-semibold theme-text hover:border-accent-500 hover:text-accent-400 ${focusedActionIdx === 1 ? "border-accent-500 text-accent-400" : "border-[color:var(--lux-border-strong)]"}`}>
+              <RotateCcw size={16} /> Change Topics
+            </button>
+            <button onClick={onBack} className={`flex-1 inline-flex items-center justify-center gap-2 rounded-full border px-5 py-3 text-sm font-semibold theme-text hover:border-accent-500 hover:text-accent-400 ${focusedActionIdx === 2 ? "border-accent-500 text-accent-400" : "border-[color:var(--lux-border-strong)]"}`}>
+              ← Back to Hub
+            </button>
+          </div>
+          <p className="text-xs theme-muted mb-6 opacity-50">Arrow keys to navigate · Enter to select</p>
+
           <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-[color:color-mix(in_srgb,var(--lux-gold)_15%,transparent)] text-accent-400 mb-6">
             <Trophy size={40} />
           </div>
           <h3 className="text-3xl font-display font-bold theme-text mb-2">Quiz Complete!</h3>
-          <p className="theme-muted text-sm mb-8">{questions.length} questions attempted</p>
+          <p className="theme-muted text-sm mb-8">{attemptedQuestions.length} of {questions.length} questions attempted</p>
 
           <div className="grid grid-cols-3 gap-4 mb-8">
             <div className="rounded-2xl bg-green-500/10 border border-green-500/30 p-4">
@@ -226,52 +302,47 @@ export default function QuizSection({ onBack }) {
             <p className="theme-muted text-sm">Accuracy</p>
           </div>
 
-          {/* Question review */}
-          <div className="text-left mb-8 space-y-3">
-            <p className="text-xs font-bold uppercase tracking-widest text-accent-500 mb-4">Question Review</p>
-            {questions.map((q, idx) => {
-              const ans = answers[idx];
-              return (
-                <div key={idx} className={`rounded-xl border p-4 ${
-                  !ans ? "border-[color:var(--lux-border)] opacity-50" :
-                  ans.correct ? "border-green-500/40 bg-green-500/5" : "border-red-500/40 bg-red-500/5"
-                }`}>
-                  <div className="flex items-start gap-3">
-                    {ans ? (
-                      ans.correct
+          {/* Question review — attempted only */}
+          {attemptedQuestions.length > 0 && (
+            <div className="text-left mb-8 space-y-3">
+              <p className="text-xs font-bold uppercase tracking-widest text-accent-500 mb-4">
+                Question Review ({attemptedQuestions.length} attempted)
+              </p>
+              {questions.map((q, idx) => {
+                const ans = answers[idx];
+                if (!ans) return null; // skip unattempted
+                return (
+                  <div key={idx} className={`rounded-xl border p-4 ${
+                    ans.correct ? "border-green-500/40 bg-green-500/5" : "border-red-500/40 bg-red-500/5"
+                  }`}>
+                    <div className="flex items-start gap-3">
+                      {ans.correct
                         ? <CheckCircle size={16} className="text-green-400 shrink-0 mt-0.5" />
                         : <XCircle size={16} className="text-red-400 shrink-0 mt-0.5" />
-                    ) : <span className="h-4 w-4 rounded-full border border-gray-600 shrink-0 mt-0.5" />}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm theme-text font-medium leading-snug">{q.question}</p>
-                      {ans && !ans.correct && (
-                        <p className="text-xs mt-1.5">
-                          <span className="text-red-400">Your answer: {ans.given}</span>
-                          <span className="mx-2 text-gray-600">·</span>
-                          <span className="text-green-400">Correct: {q.answer}</span>
-                        </p>
-                      )}
-                      {ans && ans.correct && (
-                        <p className="text-xs mt-1 text-green-400">{q.answer}</p>
-                      )}
+                      }
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm theme-text font-medium leading-snug">{q.question}</p>
+                        {!ans.correct && (
+                          <p className="text-xs mt-1.5">
+                            <span className="text-red-400">Your answer: {ans.given}</span>
+                            <span className="mx-2 text-gray-600">·</span>
+                            <span className="text-green-400">Correct: {q.answer}</span>
+                          </p>
+                        )}
+                        {ans.correct && (
+                          <p className="text-xs mt-1 text-green-400">{q.answer}</p>
+                        )}
+                        {q.explanation && (
+                          <p className="text-xs theme-muted mt-1.5 opacity-70 leading-relaxed">{q.explanation}</p>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
 
-          <div className="flex flex-col sm:flex-row gap-3">
-            <button onClick={startQuiz} className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-[color:var(--lux-gold)] px-5 py-3 text-sm font-bold text-[#16110c] shadow-glow hover:brightness-105">
-              <RefreshCw size={16} /> Retry Same Topics
-            </button>
-            <button onClick={() => setPhase("setup")} className="flex-1 inline-flex items-center justify-center gap-2 rounded-full border border-[color:var(--lux-border-strong)] px-5 py-3 text-sm font-semibold theme-text hover:border-accent-500 hover:text-accent-400">
-              <RotateCcw size={16} /> Change Topics
-            </button>
-            <button onClick={onBack} className="flex-1 inline-flex items-center justify-center gap-2 rounded-full border border-[color:var(--lux-border-strong)] px-5 py-3 text-sm font-semibold theme-text hover:border-accent-500 hover:text-accent-400">
-              ← Back to Hub
-            </button>
-          </div>
         </motion.div>
       </div>
     );
@@ -284,7 +355,7 @@ export default function QuizSection({ onBack }) {
     <div className="max-w-2xl mx-auto w-full pb-8 px-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <button onClick={() => setPhase("summary")} className="flex items-center text-red-400 hover:text-red-300 font-medium transition-colors bg-panel px-4 py-2 rounded-lg border border-red-500/30 hover:border-red-500/60 text-sm">
+        <button onClick={() => setShowQuitDialog(true)} className="flex items-center text-red-400 hover:text-red-300 font-medium transition-colors bg-panel px-4 py-2 rounded-lg border border-red-500/30 hover:border-red-500/60 text-sm">
           <span className="mr-2 text-lg leading-none">✕</span>End Quiz
         </button>
         <div className="flex items-center gap-3">
@@ -413,6 +484,9 @@ export default function QuizSection({ onBack }) {
                         Correct answer: <span className="font-bold text-accent-400">{currentQ.answer}</span>
                       </p>
                     )}
+                    {currentQ.explanation && (
+                      <p className="text-xs theme-muted mt-2 opacity-80 leading-relaxed">{currentQ.explanation}</p>
+                    )}
                     {retryMode && <p className="text-xs theme-muted mt-1 opacity-70">Retry not counted in score.</p>}
                     {submitted && <p className="text-xs theme-muted mt-1 opacity-60">Press Enter for next</p>}
                   </div>
@@ -451,6 +525,52 @@ export default function QuizSection({ onBack }) {
             </div>
           </div>
         </motion.div>
+      </AnimatePresence>
+
+      {/* ── Quit confirmation dialog ── */}
+      <AnimatePresence>
+        {showQuitDialog && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 16 }}
+              transition={{ duration: 0.18 }}
+              className="glass-panel w-full max-w-sm p-6 text-center"
+            >
+              <p className="text-2xl mb-3">🤔</p>
+              <h3 className="font-display text-lg font-bold theme-text mb-2">Quit the quiz?</h3>
+              <p className="text-sm theme-muted mb-6">
+                You're on question {currentIdx + 1} of {questions.length}. What would you like to do?
+              </p>
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => { setShowQuitDialog(false); setPhase("summary"); }}
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[color:var(--lux-gold)] px-5 py-3 text-sm font-bold text-[#16110c] shadow-glow hover:brightness-105"
+                >
+                  <Trophy size={15} /> See my results
+                </button>
+                <button
+                  onClick={() => { setShowQuitDialog(false); onBack(); }}
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-[color:var(--lux-border-strong)] px-5 py-3 text-sm font-semibold theme-text hover:border-[color:var(--lux-gold)] hover:text-[color:var(--lux-gold)] transition"
+                >
+                  ← Back to Knowledge Hub
+                </button>
+                <button
+                  onClick={() => setShowQuitDialog(false)}
+                  className="text-xs theme-muted hover:text-[color:var(--lux-text)] transition py-1"
+                >
+                  Continue quiz
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );

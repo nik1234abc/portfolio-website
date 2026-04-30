@@ -711,7 +711,36 @@ export const kafkaInterview = {
       example: "Safe config: producer acks=all, topic replication.factor=3, min.insync.replicas=2, unclean.leader.election.enable=false. This means: message only acknowledged after written to at least 2 in-sync replicas. Even if 1 broker fails, 2 copies exist. Unclean election disabled — no stale replica can become leader. Data loss probability: near zero.",
       followUps: [{ question: "What is min.insync.replicas?", answer: "min.insync.replicas=N means the producer's acks=all write only succeeds if at least N replicas are in sync. If fewer than N replicas are available, the producer gets a NotEnoughReplicasException. Set to 2 with RF=3 for strong durability — tolerates 1 broker failure while preventing data loss." }],
       keyPoints: ["acks=0/1 + broker crash = potential data loss", "RF=1 + disk failure = data loss", "unclean.leader.election=true = potential data loss", "Safe: acks=all + RF=3 + min.insync.replicas=2 + unclean election disabled"]
-    }
+    },
+
+    // ─── VS QUESTIONS ─────────────────────────────────────────────────────────
+    {
+      id: 76, category: "Kafka", topic: "16. VS Questions",
+      question: "Kafka vs RabbitMQ — when to use which?",
+      simpleAnswer: "Kafka is for high-throughput event streaming with replay. RabbitMQ is for task queues where each message is processed once and deleted.",
+      explanation: "Kafka retains messages on disk for a configurable period — multiple consumers can read the same message independently, and you can replay from any offset. RabbitMQ deletes messages after consumption — designed for task distribution where one worker picks up each task. Kafka handles millions of messages/sec. RabbitMQ is better for complex routing, priority queues, and request-reply patterns.",
+      example: "Kafka: stream of user click events consumed by analytics, recommendations, and audit services independently. RabbitMQ: email sending tasks — one worker picks up each task, processes it, message is gone.",
+      followUps: [{ question: "Can RabbitMQ replay messages?", answer: "No — once consumed and acknowledged, messages are deleted. Kafka's log-based storage is what enables replay." }],
+      keyPoints: ["Kafka: log-based, replay, multiple consumers", "RabbitMQ: queue-based, one consumer per message", "Kafka: high throughput, event streaming", "RabbitMQ: complex routing, task queues"]
+    },
+    {
+      id: 77, category: "Kafka", topic: "16. VS Questions",
+      question: "Kafka vs Redis Pub/Sub",
+      simpleAnswer: "Kafka persists messages to disk with replay. Redis Pub/Sub is in-memory fire-and-forget — if no subscriber is listening, the message is lost.",
+      explanation: "Redis Pub/Sub is extremely fast but has no persistence — messages are lost if subscribers are offline. Kafka stores messages durably and consumers can catch up after downtime. Redis is good for real-time notifications where losing a message is acceptable. Kafka is for reliable event streaming where every message must be processed.",
+      example: "Redis Pub/Sub: live chat notifications — if user is offline, they miss the message (acceptable). Kafka: order events — PaymentService must process every order even if it was down for 10 minutes.",
+      followUps: [{ question: "Does Redis Streams solve this?", answer: "Yes — Redis Streams adds persistence and consumer groups similar to Kafka, but at smaller scale. Kafka is still preferred for high-throughput production systems." }],
+      keyPoints: ["Redis Pub/Sub: in-memory, no persistence, fire-and-forget", "Kafka: disk-based, durable, replay", "Redis: ultra-fast, acceptable message loss", "Kafka: reliable, every message guaranteed"]
+    },
+    {
+      id: 78, category: "Kafka", topic: "16. VS Questions",
+      question: "at-least-once vs exactly-once vs at-most-once delivery",
+      simpleAnswer: "at-most-once: may lose messages. at-least-once: may duplicate. exactly-once: no loss, no duplicates — hardest to achieve.",
+      explanation: "at-most-once: commit offset before processing — if crash during processing, message is lost. at-least-once: commit after processing — if crash before commit, message reprocessed. exactly-once: requires idempotent producers + transactional consumers — Kafka guarantees this within the Kafka ecosystem but external systems need application-level idempotency.",
+      example: "at-most-once: metrics collection (losing a few is fine). at-least-once: email notifications (duplicate email is annoying but acceptable). exactly-once: payment processing (must process exactly once).",
+      followUps: [{ question: "How do you achieve exactly-once with external DBs?", answer: "Kafka can't control external systems. Use idempotency keys — store the message ID in DB and check before processing. If already processed, skip." }],
+      keyPoints: ["at-most-once: commit before processing, may lose", "at-least-once: commit after processing, may duplicate", "exactly-once: idempotent producer + transactions", "External systems need application-level idempotency"]
+    },
   ]
 };
 

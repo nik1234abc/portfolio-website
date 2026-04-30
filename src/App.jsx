@@ -26,11 +26,15 @@ function App() {
       window.history.scrollRestoration = "manual";
     }
 
-    if (window.location.hash) {
-      window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+    const hash = window.location.hash;
+    if (hash) {
+      // Came from another page with a hash (e.g. /knowledge-hub → /#contact)
+      setTimeout(() => {
+        document.querySelector(hash)?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    } else {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
     }
-
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, []);
 
   const personSchema = {

@@ -702,6 +702,35 @@ export const microservicesInterview = {
       example: "E-commerce monolith. Step 1: Extract UserService — route /users/* to new service, keep rest in monolith. Step 2: Extract ProductService — route /products/*. Step 3: Extract OrderService. After 6 months, monolith only handles legacy reports. After 9 months, monolith decommissioned. Zero big-bang risk.",
       followUps: [{ question: "What is the anti-corruption layer in the Strangler Pattern?", answer: "A translation layer between the new microservice and the old monolith. It translates the monolith's data model to the microservice's model, preventing the old design from corrupting the new service's clean architecture." }],
       keyPoints: ["Gradual migration from monolith to microservices", "New services built alongside the monolith", "API Gateway routes traffic to new services", "No big-bang rewrite — low risk migration"]
-    }
+    },
+
+    // ─── VS QUESTIONS ─────────────────────────────────────────────────────────
+    {
+      id: 76, category: "Microservices", topic: "14. VS Questions",
+      question: "Microservices vs Monolith — when to use which?",
+      simpleAnswer: "Monolith: simpler, faster to build, good for small teams. Microservices: independent scaling, deployment, and tech stacks — good for large teams and complex domains.",
+      explanation: "Monolith is a single deployable unit — easier to develop, test, and debug. All code in one place. Microservices split the system into independent services — each can be deployed, scaled, and updated independently. Microservices add complexity: network calls, distributed transactions, service discovery. Don't start with microservices — start monolith, extract services when pain points emerge.",
+      example: "Startup: monolith — ship fast. After 2 years with 50 engineers: extract OrderService, PaymentService, UserService — teams own their services independently.",
+      followUps: [{ question: "What is a modular monolith?", answer: "A monolith with clear internal module boundaries — easier to extract into microservices later. Best of both worlds for medium-sized teams." }],
+      keyPoints: ["Monolith: simple, fast, single deployment", "Microservices: independent scaling and deployment", "Microservices add network, consistency complexity", "Start monolith, extract when needed"]
+    },
+    {
+      id: 77, category: "Microservices", topic: "14. VS Questions",
+      question: "Synchronous vs Asynchronous communication in microservices",
+      simpleAnswer: "Synchronous (REST/gRPC): caller waits for response — tight coupling, simpler. Asynchronous (Kafka/RabbitMQ): fire-and-forget — loose coupling, resilient, harder to debug.",
+      explanation: "Synchronous: Service A calls Service B and waits. If B is slow or down, A is blocked. Simple to implement and reason about. Asynchronous: A publishes an event to Kafka, B consumes it later. A doesn't wait — continues processing. B can be down and catch up later. Better for high throughput and resilience but harder to trace and debug.",
+      example: "Sync: GET /users/42 — UserService calls AuthService to validate token, waits for response. Async: OrderService publishes OrderPlaced to Kafka — PaymentService, InventoryService, NotificationService consume independently.",
+      followUps: [{ question: "When should you use synchronous communication?", answer: "When you need an immediate response — user-facing APIs, real-time queries. Use async for background processing, notifications, and workflows that don't need immediate results." }],
+      keyPoints: ["Sync: immediate response, tight coupling, simple", "Async: decoupled, resilient, eventual consistency", "Sync: REST/gRPC", "Async: Kafka, RabbitMQ, SQS"]
+    },
+    {
+      id: 78, category: "Microservices", topic: "14. VS Questions",
+      question: "API Gateway vs Load Balancer",
+      simpleAnswer: "Load Balancer distributes traffic across instances of the same service. API Gateway is a smart entry point that routes, authenticates, rate-limits, and transforms requests across different services.",
+      explanation: "Load Balancer works at L4/L7 — distributes requests across identical server instances for availability and performance. API Gateway works at L7 — it's application-aware. It routes /orders to OrderService, /users to UserService, validates JWT tokens, enforces rate limits, handles SSL termination, and can transform requests/responses. They're complementary — API Gateway sits in front, load balancer sits behind each service.",
+      example: "Client → API Gateway (auth, routing, rate limit) → Load Balancer → [OrderService instance 1, instance 2, instance 3].",
+      followUps: [{ question: "Can an API Gateway replace a load balancer?", answer: "Partially — API Gateways like AWS API Gateway do load balance. But dedicated load balancers (ALB) are more efficient for pure traffic distribution at scale." }],
+      keyPoints: ["Load Balancer: distributes traffic, same service", "API Gateway: routing, auth, rate limiting, transformation", "API Gateway: application-aware (L7)", "They work together — Gateway in front, LB behind"]
+    },
   ]
 };
