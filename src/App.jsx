@@ -26,12 +26,17 @@ function App() {
       window.history.scrollRestoration = "manual";
     }
 
-    const hash = window.location.hash;
-    if (hash) {
-      // Came from another page with a hash (e.g. /knowledge-hub → /#contact)
+    if (window.location.hash) {
+      window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+    }
+
+    // Check if we were sent here from another page with a scroll target
+    const scrollTo = sessionStorage.getItem("scrollTo");
+    if (scrollTo) {
+      sessionStorage.removeItem("scrollTo");
       setTimeout(() => {
-        document.querySelector(hash)?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
+        document.querySelector(scrollTo)?.scrollIntoView({ behavior: "smooth" });
+      }, 300);
     } else {
       window.scrollTo({ top: 0, left: 0, behavior: "auto" });
     }
@@ -73,6 +78,53 @@ function App() {
 }
 
 function HomePage({ theme, toggleTheme, isResumeModalOpen, setIsResumeModalOpen, personSchema }) {
+  // Enable Executive Arrow-Key Navigation across sections
+  useEffect(() => {
+    if (isResumeModalOpen) return;
+
+    const sections = ['home', 'about', 'skills', 'projects', 'credentials', 'contact'];
+
+    const handleKeyDown = (e) => {
+      // Do not interfere if the user is typing inside the contact form
+      if (["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName)) return;
+
+      if (["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+        e.preventDefault();
+
+        let currentIdx = 0;
+        let minDistance = Infinity;
+
+        // Find the section currently closest to the top of the viewport
+        sections.forEach((id, idx) => {
+          const el = document.getElementById(id);
+          if (el) {
+            const rect = el.getBoundingClientRect();
+            // Offset accounts for the sticky navbar when calculating the "active" section
+            const distance = Math.abs(rect.top - 150);
+            if (distance < minDistance) {
+              minDistance = distance;
+              currentIdx = idx;
+            }
+          }
+        });
+
+        if ((e.key === "ArrowDown" || e.key === "ArrowRight") && currentIdx < sections.length - 1) {
+          document.getElementById(sections[currentIdx + 1])?.scrollIntoView({ behavior: "smooth" });
+        } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+          if (currentIdx === 1 || (currentIdx === 0 && window.scrollY > 0)) {
+            // Snap to the absolute top of the page so the Navbar isn't cut off
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          } else if (currentIdx > 1) {
+            document.getElementById(sections[currentIdx - 1])?.scrollIntoView({ behavior: "smooth" });
+          }
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isResumeModalOpen]);
+
   return (
     <div className="page-shell">
       <Helmet>
@@ -127,7 +179,7 @@ function HomePage({ theme, toggleTheme, isResumeModalOpen, setIsResumeModalOpen,
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--lux-gold)] text-[#16110c] shadow-glow hover:brightness-110 focus:outline-none cursor-grab active:cursor-grabbing"
+        className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center !p-0 rounded-full lux-btn-primary focus:outline-none cursor-grab active:cursor-grabbing"
         aria-label="Back to top"
       >
         <Home size={20} />

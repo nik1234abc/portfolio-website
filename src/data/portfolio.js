@@ -77,13 +77,13 @@ export const portfolio = {
   },
   personal: {
     name: "Nikhil Gadhwal",
-    title: "Java Backend Developer | Spring Boot | Microservices | AWS",
+    title: "Senior Java Backend Engineer",
     location: "New Delhi, India",
     email: "gadhwalnikhil@gmail.com",
     linkedin: "https://www.linkedin.com/in/nikhil-gadhwal-1b8688138/",
     github: "https://github.com/nik1234abc",
     summary:
-      "Building scalable enterprise backend systems with strong experience across modernization, automation, and cloud-native engineering.",
+      "I design and build scalable, secure, and resilient backend systems that power enterprise applications. Experienced in architecture, cloud-native modernization, and automation with a strong focus on performance, reliability, and business impact.",
     expandedSummary:
       "I build reliable backend platforms for enterprise and financial workflows, with strong depth in distributed systems, production support, secure service delivery, and cloud modernization. My work is centered on improving data consistency, reducing operational friction, and keeping high-volume systems resilient in production.",
     availability:
@@ -91,10 +91,10 @@ export const portfolio = {
     resumeFile: "/Nikhil_Gadhwal_Java_Backend_Developer.pdf"
   },
   quickStats: [
-    { label: "Experience", value: "4+ years", note: "Enterprise backend engineering" },
-    { label: "Microservices modernized", value: "9", note: "Java 8 to Java 21 migration" },
-    { label: "Efficiency gains", value: "50-70%", note: "Across invoicing and regional automation" },
-    { label: "Domain", value: "Billing + finance", note: "Secure, multi-region workflows" }
+    { label: "Years in Production", value: "4+", note: "Enterprise backend @ TCS" },
+    { label: "Microservices Modernized", value: "9", note: "Java 8 → Java 21 migration" },
+    { label: "Operational Efficiency", value: "50–70%", note: "Invoicing & regional automation" },
+    { label: "AWS Certified", value: "CCP", note: "Valid Dec 2025 – Dec 2028" }
   ],
   focusAreas: [
     "Scalable systems",

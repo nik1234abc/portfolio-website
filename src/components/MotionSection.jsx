@@ -13,12 +13,15 @@ const container = {
 };
 
 export default function MotionSection({ id, className = "", children }) {
+  // Start visible if this section is the scroll target (coming from another page)
+  const isTarget = typeof window !== "undefined" && sessionStorage.getItem("scrollTarget") === id;
+
   return (
     <motion.section
       id={id}
       className={className}
       variants={container}
-      initial="hidden"
+      initial={isTarget ? "visible" : "hidden"}
       whileInView="visible"
       viewport={{ once: true, amount: 0.18 }}
     >

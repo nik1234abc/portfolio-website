@@ -29,8 +29,10 @@ export default function Navbar({ theme, toggleTheme, resumeFile }) {
         e.preventDefault();
         document.querySelector(hash)?.scrollIntoView({ behavior: "smooth" });
         setOpen(false);
+      } else {
+        // Store the target hash so the homepage can scroll to it after mount
+        sessionStorage.setItem("scrollTo", hash);
       }
-      // if not on home page, let the browser navigate normally to /#contact
     }
   };
 
@@ -43,7 +45,7 @@ export default function Navbar({ theme, toggleTheme, resumeFile }) {
         >
           <span className="brand-mark">NG</span>
           <div>
-            <p className="font-display text-base font-bold theme-text">Nikhil Gadhwal</p>
+            <p className="font-display text-base font-bold text-[color:var(--lux-gold)]">Nikhil Gadhwal</p>
             <p className="text-sm theme-muted">Java Backend Developer</p>
           </div>
         </a>
@@ -60,7 +62,7 @@ export default function Navbar({ theme, toggleTheme, resumeFile }) {
           <a
             href={resumeFile}
             download
-            className="inline-flex items-center rounded-full border border-[color:var(--lux-border)] bg-[color:color-mix(in_srgb,var(--lux-panel-soft)_82%,transparent)] px-4 py-2 text-sm font-semibold theme-text transition hover:border-[color:var(--lux-border-strong)] hover:text-[color:var(--lux-gold)]"
+            className="lux-btn-secondary !px-5 !py-2.5 text-sm"
           >
             Download Resume
           </a>
@@ -99,7 +101,7 @@ export default function Navbar({ theme, toggleTheme, resumeFile }) {
               onClick={() => {
                 setOpen(false);
               }}
-              className="mt-2 inline-flex w-fit items-center rounded-full border border-[color:var(--lux-border)] bg-[color:color-mix(in_srgb,var(--lux-panel-soft)_82%,transparent)] px-5 py-2.5 text-sm font-semibold theme-text transition hover:border-[color:var(--lux-border-strong)] hover:text-[color:var(--lux-gold)]"
+              className="mt-2 lux-btn-secondary w-fit !px-5 !py-2.5 text-sm"
             >
               Download Resume
             </a>

@@ -79,7 +79,7 @@ export default function CredentialsSection({ certifications, achievements }) {
     <MotionSection id="credentials" className="mx-auto max-w-7xl px-6 py-14 lg:px-8">
       <SectionHeading
         eyebrow="Credentials"
-        title="Certifications and recognition"
+        title={<span className="text-[color:var(--lux-gold)]">Certifications and recognition</span>}
         description="Formal certifications and achievements, surfaced in an executive format that stays concise on the homepage and expands into proof on demand."
       />
 
@@ -87,14 +87,14 @@ export default function CredentialsSection({ certifications, achievements }) {
         <div className="glass-panel p-7">
           <div className="flex items-center gap-3">
             <BadgeCheck className="text-[color:var(--lux-gold)]" size={22} />
-            <h3 className="theme-text font-display text-2xl font-bold">Certification</h3>
+            <h3 className="text-[color:var(--lux-gold)] font-display text-2xl font-bold">Certification</h3>
           </div>
           <div className="mt-6 grid gap-4">
             {certifications.map((certification) => (
               <div key={certification.name} className="lux-subpanel">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <h4 className="theme-text font-display text-xl font-bold">{certification.name}</h4>
+                    <h4 className="text-[color:var(--lux-gold)] font-display text-xl font-bold">{certification.name}</h4>
                     <p className="theme-muted mt-2 text-sm">{certification.timeframe}</p>
                     <p className="theme-muted mt-3 text-sm">Trusted AWS certification with instant verification and premium credibility.</p>
                   </div>
@@ -134,7 +134,7 @@ export default function CredentialsSection({ certifications, achievements }) {
         <div className="glass-panel p-7">
           <div className="flex items-center gap-3">
             <Award className="text-[color:var(--lux-gold)]" size={22} />
-            <h3 className="theme-text font-display text-2xl font-bold">Achievements</h3>
+            <h3 className="text-[color:var(--lux-gold)] font-display text-2xl font-bold">Achievements</h3>
           </div>
           <div className="mt-6 grid gap-4">
             {achievements.map((achievement, idx) => (

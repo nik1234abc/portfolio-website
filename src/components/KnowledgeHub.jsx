@@ -132,8 +132,8 @@ function CodeBlock({ code }) {
   const types = /\b(String|int|long|boolean|double|float|List|Map|Set|Optional|void|Object|Integer|Long|Boolean|ResponseEntity|Order|User|Payment)\b/g;
 
   return (
-    <div className="rounded-lg border border-[color:var(--lux-border)] bg-[color:var(--lux-code-bg)] p-4 overflow-x-auto">
-      <pre className="text-xs leading-relaxed font-mono">
+    <div className="rounded-lg border border-[color:var(--lux-border)] bg-[color:var(--lux-code-bg)] p-4 overflow-x-auto max-w-full">
+      <pre className="text-xs leading-relaxed font-mono whitespace-pre-wrap break-words">
         {lines.map((line, i) => {
           // comment line
           if (comments.test(line)) {
@@ -902,23 +902,23 @@ const KnowledgeHub = () => {
                           initial={{ opacity: 0, y: 16 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.35 }}
-                          className="mt-7 space-y-5"
+                          className="mt-7 space-y-5 min-w-0 overflow-hidden"
                         >
                           {/* Simple Answer — hero block */}
                           <div className="rounded-2xl border border-[color:var(--lux-gold)]/25 bg-[color:color-mix(in_srgb,var(--lux-gold)_5%,transparent)] p-5">
                             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[color:var(--lux-gold)] mb-2">✦ Simple Answer</p>
-                            <p className="text-base sm:text-lg leading-relaxed font-medium theme-text">{activeQuestion.simpleAnswer}</p>
+                            <p className="text-base sm:text-lg leading-relaxed font-medium theme-text break-words">{activeQuestion.simpleAnswer}</p>
                           </div>
 
                           {/* Explanation + Example side by side */}
                           <div className="grid gap-4 md:grid-cols-2">
-                            <div className="lux-subpanel">
+                            <div className="lux-subpanel min-w-0">
                               <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[color:var(--lux-muted)] mb-3">
                                 <Lightbulb size={13} /> Explanation
                               </p>
-                              <p className="text-sm leading-relaxed theme-muted whitespace-pre-wrap">{activeQuestion.explanation}</p>
+                              <p className="text-sm leading-relaxed theme-muted break-words whitespace-pre-wrap">{activeQuestion.explanation}</p>
                             </div>
-                            <div className="lux-subpanel flex flex-col">
+                            <div className="lux-subpanel flex flex-col min-w-0 overflow-hidden">
                               <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[color:var(--lux-muted)] mb-3 shrink-0">
                                 <Target size={13} /> Real-world Example
                               </p>

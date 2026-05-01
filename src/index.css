@@ -3,62 +3,71 @@
 @tailwind utilities;
 
 :root {
-  --lux-bg: #f8f7f4;
-  --lux-bg-alt: #ede9e0;
-  --lux-panel: rgba(255, 255, 255, 0.88);
-  --lux-panel-strong: #ffffff;
-  --lux-panel-soft: rgba(255, 255, 255, 0.72);
-  --lux-gold: #c6a969;
-  --lux-gold-deep: #8b7355;
-  --lux-text: #111827;
-  --lux-muted: #4b5563;
-  --lux-border: rgba(198, 169, 105, 0.24);
-  --lux-border-strong: rgba(198, 169, 105, 0.44);
-  --lux-shadow: 0 22px 55px rgba(17, 24, 39, 0.08);
-  --lux-shadow-strong: 0 18px 45px rgba(17, 24, 39, 0.12);
-  --lux-code-bg: #f0ece4;
-  --lux-code-text: #1f2937;
+  --lux-bg: #F0F9FF;
+  --lux-bg-alt: #E0F2FE;
+  --lux-panel: rgba(255, 255, 255, 0.85);
+  --lux-panel-strong: #FFFFFF;
+  --lux-panel-soft: rgba(255, 255, 255, 0.60);
+  --lux-gold: #14B8A6;
+  --lux-gold-deep: #0F766E;
+  --lux-accent-alt: #3B82F6;
+  --lux-glow-primary: var(--lux-accent-alt);
+  --lux-glow-secondary: var(--lux-gold);
+  --lux-text: #0F172A;
+  --lux-muted: #475569;
+  --lux-border: rgba(59, 130, 246, 0.12);
+  --lux-border-strong: rgba(59, 130, 246, 0.25);
+  --lux-shadow: 0 16px 40px rgba(15, 23, 42, 0.03);
+  --lux-shadow-strong: 0 20px 50px rgba(15, 23, 42, 0.08);
+  --lux-code-bg: #E0F2FE;
+  --lux-code-text: #1E3A8A;
   --theme-gradient:
-    radial-gradient(circle at top left, rgba(198, 169, 105, 0.18), transparent 26%),
-    radial-gradient(circle at bottom right, rgba(139, 115, 85, 0.10), transparent 22%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.70), rgba(248, 247, 244, 0.92));
+    radial-gradient(ellipse at 20% 0%, rgba(59, 130, 246, 0.15), transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(20, 184, 166, 0.08), transparent 50%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.60), rgba(240, 249, 255, 0.95));
 }
 
 .dark {
-  --lux-bg: #111827;
-  --lux-bg-alt: #1f2937;
-  --lux-panel: rgba(23, 29, 37, 0.88);
-  --lux-panel-strong: #141a21;
-  --lux-panel-soft: rgba(31, 41, 55, 0.7);
-  --lux-gold: #c6a969;
-  --lux-gold-deep: #8b7355;
-  --lux-text: #f9fafb;
-  --lux-muted: #d1d5db;
-  --lux-border: rgba(198, 169, 105, 0.16);
-  --lux-border-strong: rgba(198, 169, 105, 0.32);
-  --lux-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
-  --lux-shadow-strong: 0 18px 48px rgba(0, 0, 0, 0.34);
-  --lux-code-bg: #0f1117;
-  --lux-code-text: #d1d5db;
+  --lux-bg: #070B14;
+  --lux-bg-alt: #0A0F1F;
+  --lux-panel: rgba(17, 24, 39, 0.78);
+  --lux-panel-strong: #172033;
+  --lux-panel-soft: rgba(30, 41, 59, 0.65);
+  --lux-gold: #9CB380;
+  --lux-gold-deep: #5E7345;
+  --lux-accent-alt: #D4E0C3;
+  --lux-glow-primary: var(--lux-gold);
+  --lux-glow-secondary: var(--lux-accent-alt);
+  --lux-text: #F9FAFB;
+  --lux-muted: #9CA3AF;
+  --lux-border: rgba(156, 179, 128, 0.18);
+  --lux-border-strong: rgba(156, 179, 128, 0.35);
+  --lux-shadow: 0 30px 70px rgba(0, 0, 0, 0.65);
+  --lux-shadow-strong: 0 20px 50px rgba(0, 0, 0, 0.80);
+  --lux-code-bg: #0D1424;
+  --lux-code-text: #D4E0C3;
   --theme-gradient:
-    radial-gradient(circle at top left, rgba(198, 169, 105, 0.14), transparent 24%),
-    radial-gradient(circle at bottom right, rgba(139, 115, 85, 0.16), transparent 22%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent 22%);
+    radial-gradient(ellipse at 15% 0%, rgba(156, 179, 128, 0.12), transparent 45%),
+    radial-gradient(ellipse at 85% 60%, rgba(212, 224, 195, 0.05), transparent 45%),
+    radial-gradient(ellipse at 50% 100%, rgba(23, 32, 51, 0.80), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,0.02), transparent 25%);
 }
 
 html {
   scroll-behavior: smooth;
   background: var(--lux-bg);
+  overflow-x: hidden;
 }
 
 body {
   @apply font-body antialiased;
   background: var(--lux-bg);
   color: var(--lux-text);
+  overflow-x: hidden;
 }
 
 ::selection {
-  background: rgba(198, 169, 105, 0.24);
+  background: color-mix(in srgb, var(--lux-gold) 30%, transparent);
   color: var(--lux-text);
 }
 
@@ -73,6 +82,7 @@ body {
 ::-webkit-scrollbar-thumb {
   background: color-mix(in srgb, var(--lux-gold) 46%, transparent);
   border-radius: 999px;
+  border: 2px solid var(--lux-bg);
 }
 
 @layer components {
@@ -91,28 +101,42 @@ body {
   }
 
   .glass-panel {
-    @apply rounded-[32px] border border-white/10 bg-panel shadow-panel backdrop-blur-xl;
+    @apply rounded-[32px] border bg-panel shadow-panel backdrop-blur-2xl;
     border-color: var(--lux-border);
     background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0)),
-      linear-gradient(145deg, color-mix(in srgb, var(--lux-gold) 8%, transparent), rgba(255, 255, 255, 0.02)),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0)),
+      linear-gradient(145deg, color-mix(in srgb, var(--lux-gold) 3%, transparent), rgba(255, 255, 255, 0.01)),
       var(--lux-panel);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), var(--lux-shadow);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.02), var(--lux-shadow);
   }
 
   .lux-subpanel {
-    @apply rounded-[28px] border p-5;
+    @apply rounded-[28px] border p-6 transition-all duration-300;
     border-color: var(--lux-border);
     background:
-      linear-gradient(180deg, color-mix(in srgb, var(--lux-gold) 8%, transparent), rgba(255, 255, 255, 0)),
+      linear-gradient(180deg, color-mix(in srgb, var(--lux-border-strong) 6%, transparent), rgba(255, 255, 255, 0)),
       var(--lux-panel-strong);
+    box-shadow: var(--lux-shadow);
+  }
+
+  .lux-subpanel:hover {
+    border-color: color-mix(in srgb, var(--lux-gold) 50%, transparent);
+    box-shadow: var(--lux-shadow-strong);
   }
 
   .lux-chip {
-    @apply rounded-full border px-4 py-2 text-sm font-semibold;
-    border-color: var(--lux-border);
+    @apply rounded-full border px-5 py-2.5 text-sm font-semibold tracking-wide backdrop-blur-md transition-all duration-300;
+    border-color: var(--lux-border-strong);
+    background: color-mix(in srgb, var(--lux-panel-strong) 90%, transparent);
+    color: var(--lux-text);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  }
+
+  .lux-chip:hover {
     background: color-mix(in srgb, var(--lux-gold) 10%, var(--lux-panel-strong));
-    color: color-mix(in srgb, var(--lux-text) 84%, var(--lux-gold) 16%);
+    border-color: var(--lux-gold);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--lux-gold) 15%, transparent);
   }
 
   .lux-chip-soft {
@@ -122,13 +146,44 @@ body {
     color: color-mix(in srgb, var(--lux-text) 76%, var(--lux-gold) 24%);
   }
 
+  .lux-btn-primary {
+    @apply inline-flex items-center justify-center rounded-full px-7 py-3.5 font-semibold transition-all duration-300 backdrop-blur-md outline-none;
+    background: linear-gradient(145deg, color-mix(in srgb, var(--lux-gold) 85%, white 15%), color-mix(in srgb, var(--lux-gold-deep) 90%, black 10%));
+    color: var(--lux-bg);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--lux-gold) 40%, transparent), inset 0 1px 0 rgba(255,255,255,0.4);
+    border: 1px solid color-mix(in srgb, var(--lux-gold) 50%, white);
+  }
+
+  .lux-btn-primary:hover {
+    background: linear-gradient(145deg, color-mix(in srgb, var(--lux-gold) 75%, white 25%), color-mix(in srgb, var(--lux-gold-deep) 85%, black 15%));
+    box-shadow: 0 12px 32px color-mix(in srgb, var(--lux-gold) 60%, transparent), inset 0 1px 0 rgba(255,255,255,0.6);
+    transform: translateY(-2px);
+  }
+
+  .lux-btn-secondary {
+    @apply inline-flex items-center justify-center rounded-full px-7 py-3.5 font-semibold transition-all duration-300 backdrop-blur-md outline-none;
+    background: color-mix(in srgb, var(--lux-panel-strong) 30%, transparent);
+    color: var(--lux-text);
+    border: 1px solid var(--lux-border-strong);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  }
+
+  .lux-btn-secondary:hover {
+    background: var(--lux-panel-strong);
+    border-color: var(--lux-gold);
+    color: var(--lux-gold);
+    box-shadow: 0 8px 25px color-mix(in srgb, var(--lux-gold) 15%, transparent);
+    transform: translateY(-2px);
+  }
+
   .lux-note {
-    @apply rounded-2xl border px-4 py-3 text-sm font-medium;
+    @apply rounded-2xl border px-5 py-4 text-sm font-medium backdrop-blur-md;
     border-color: var(--lux-border);
     background:
-      linear-gradient(135deg, color-mix(in srgb, var(--lux-gold) 12%, transparent), rgba(255, 255, 255, 0)),
-      color-mix(in srgb, var(--lux-panel-soft) 82%, transparent);
-    color: color-mix(in srgb, var(--lux-text) 78%, white 22%);
+      linear-gradient(135deg, color-mix(in srgb, var(--lux-gold) 5%, transparent), rgba(255, 255, 255, 0)),
+      color-mix(in srgb, var(--lux-panel-soft) 80%, transparent);
+    color: var(--lux-text);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
   }
 
   .lux-icon-button {
@@ -145,16 +200,19 @@ body {
   }
 
   .brand-mark {
-    @apply inline-flex h-11 w-11 items-center justify-center rounded-2xl border font-display text-lg font-bold shadow-glow;
+    @apply inline-flex h-11 w-11 items-center justify-center rounded-2xl border font-display text-lg font-bold shadow-glow transition-all duration-300;
     border-color: var(--lux-border-strong);
     background:
-      linear-gradient(145deg, color-mix(in srgb, var(--lux-gold) 78%, white 22%), color-mix(in srgb, var(--lux-gold-deep) 82%, #221b14 18%));
-    color: #16110c;
+      linear-gradient(145deg, color-mix(in srgb, var(--lux-gold) 85%, white 15%), color-mix(in srgb, var(--lux-gold-deep) 90%, black 10%));
+    color: var(--lux-bg);
+    box-shadow: 0 4px 20px color-mix(in srgb, var(--lux-gold) 35%, transparent), inset 0 1px 0 rgba(255,255,255,0.4);
   }
 
   .theme-navbar {
-    border-bottom: 1px solid color-mix(in srgb, var(--lux-border) 62%, transparent);
-    background: color-mix(in srgb, var(--lux-bg) 84%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--lux-border-strong) 40%, transparent);
+    background: color-mix(in srgb, var(--lux-bg) 85%, transparent);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03), 0 1px 0 color-mix(in srgb, var(--lux-gold) 15%, transparent);
+    @apply backdrop-blur-xl;
   }
 
   .theme-nav-link {
@@ -168,24 +226,24 @@ body {
   .theme-badge {
     @apply rounded-full border px-4 py-2 text-sm font-semibold shadow-sm backdrop-blur;
     border-color: color-mix(in srgb, var(--lux-gold) 32%, transparent);
-    background: color-mix(in srgb, var(--lux-gold) 9%, var(--lux-panel-soft));
-    color: color-mix(in srgb, var(--lux-gold) 78%, var(--lux-text) 22%);
+    background: color-mix(in srgb, var(--lux-gold) 10%, var(--lux-panel-strong));
+    color: color-mix(in srgb, var(--lux-gold) 90%, var(--lux-text) 10%);
   }
 
   .theme-toggle {
-    @apply relative inline-flex h-11 w-[84px] items-center rounded-full border px-2 transition duration-500;
-    border-color: var(--lux-border);
+    @apply relative inline-flex h-11 w-[84px] items-center rounded-full border px-2 transition duration-500 backdrop-blur-md;
+    border-color: var(--lux-border-strong);
     background:
-      linear-gradient(145deg, color-mix(in srgb, var(--lux-gold) 9%, transparent), rgba(255, 255, 255, 0.02)),
-      color-mix(in srgb, var(--lux-panel-soft) 92%, transparent);
-    box-shadow: var(--lux-shadow);
+      linear-gradient(145deg, color-mix(in srgb, var(--lux-gold) 15%, transparent), rgba(255, 255, 255, 0.02)),
+      color-mix(in srgb, var(--lux-panel-soft) 80%, transparent);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05), var(--lux-shadow);
   }
 
   .theme-toggle-thumb {
     @apply absolute top-1 h-9 w-9 rounded-full transition-all duration-500;
     left: 0.25rem;
     background:
-      linear-gradient(145deg, color-mix(in srgb, var(--lux-gold) 80%, white 20%), color-mix(in srgb, var(--lux-gold-deep) 72%, #2e241b 28%));
+      linear-gradient(145deg, color-mix(in srgb, var(--lux-gold) 80%, white 20%), color-mix(in srgb, var(--lux-gold-deep) 72%, black 28%));
     box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
   }
 
@@ -203,15 +261,17 @@ body {
   }
 
   .hero-orb {
-    @apply pointer-events-none absolute h-72 w-72 rounded-full blur-3xl;
+    @apply pointer-events-none absolute h-96 w-96 rounded-full blur-[100px] opacity-60;
   }
 
   .hero-orb-left {
-    @apply left-[-6rem] top-12 bg-accent-400/20;
+    @apply left-[-6rem] top-12;
+    background: radial-gradient(circle, color-mix(in srgb, var(--lux-glow-primary) 18%, transparent), transparent);
   }
 
   .hero-orb-right {
-    @apply right-[-4rem] top-36 bg-accent-700/20;
+    @apply right-[-4rem] top-36;
+    background: radial-gradient(circle, color-mix(in srgb, var(--lux-glow-secondary) 10%, transparent), transparent);
   }
 
   .status-dot {

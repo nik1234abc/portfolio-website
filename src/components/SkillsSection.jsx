@@ -7,7 +7,7 @@ export default function SkillsSection({ skills }) {
     <MotionSection id="skills" className="mx-auto max-w-7xl px-6 py-14 lg:px-8">
       <SectionHeading
         eyebrow="Skills"
-        title="Core backend stack"
+        title={<span className="text-[color:var(--lux-gold)]">Core backend stack</span>}
         description="A concise view of the technologies I use most across backend development, distributed services, cloud workflows, and delivery."
       />
 
@@ -21,7 +21,7 @@ export default function SkillsSection({ skills }) {
             transition={{ duration: 0.5, delay: index * 0.06 }}
             className="glass-panel p-6 sm:p-7"
           >
-            <h3 className="theme-text font-display text-2xl font-bold">{group.category}</h3>
+            <h3 className="text-[color:var(--lux-gold)] font-display text-2xl font-bold">{group.category}</h3>
             <p className="theme-muted mt-2 text-sm leading-7">{group.description}</p>
 
             <div className="mt-6 flex flex-wrap gap-2.5">

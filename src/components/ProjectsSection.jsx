@@ -44,7 +44,7 @@ function ProjectModal({ project, onClose }) {
           <div className="flex items-start justify-between gap-4">
             <div>
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[color:var(--lux-muted)]">Expanded Details</p>
-              <h3 className="theme-text mt-3 font-display text-3xl font-bold">{project.title}</h3>
+              <h3 className="text-[color:var(--lux-gold)] mt-3 font-display text-3xl font-bold">{project.title}</h3>
             </div>
 
             <button
@@ -104,7 +104,7 @@ export default function ProjectsSection({ projects }) {
     <MotionSection id="projects" className="mx-auto max-w-7xl px-6 py-14 lg:px-8">
       <SectionHeading
         eyebrow="Featured Projects"
-        title="Technical execution and abstracted backend impact"
+        title={<span className="text-[color:var(--lux-gold)]">Technical execution and abstracted backend impact</span>}
         description="A look into the structural challenges, technical solutions, and system improvements delivered across enterprise environments."
       />
 
@@ -115,7 +115,7 @@ export default function ProjectsSection({ projects }) {
             className="glass-panel group flex min-h-[260px] flex-col justify-between p-6 sm:p-7 transition duration-300 hover:-translate-y-1 hover:border-[color:var(--lux-gold)] hover:shadow-panel"
           >
             <div>
-              <h3 className="theme-text font-display text-xl font-bold leading-tight">{project.title}</h3>
+              <h3 className="text-[color:var(--lux-gold)] font-display text-xl font-bold leading-tight">{project.title}</h3>
               <p className="theme-muted mt-4 text-sm leading-7">{project.brief}</p>
             </div>
             <div className="mt-6 flex items-center justify-between border-t border-[color:var(--lux-border)] pt-4">

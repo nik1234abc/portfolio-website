@@ -9,25 +9,25 @@ export default {
         surface: "var(--lux-bg)",
         panel: "var(--lux-panel-strong)",
         accent: {
-          50: "#f7f1e5",
-          100: "#eadcc2",
-          200: "#d9c19a",
-          300: "#c9a66f",
-          400: "#b08d57",
-          500: "#9d7a49",
-          600: "#87653d",
-          700: "#6f5234",
-          800: "#56402b",
-          900: "#403020"
+          50: "#faf6ee",
+          100: "#f0e6cc",
+          200: "#e2cfa0",
+          300: "#d4b878",
+          400: "#C8A96B",
+          500: "#b8944f",
+          600: "#9A7D4A",
+          700: "#7a6038",
+          800: "#5c4828",
+          900: "#3d2f1a"
         }
       },
       boxShadow: {
-        glow: "0 20px 80px rgba(176, 141, 87, 0.18)",
-        panel: "0 24px 60px rgba(0, 0, 0, 0.28)"
+        glow: "0 20px 80px rgba(200, 169, 107, 0.16)",
+        panel: "0 24px 60px rgba(0, 0, 0, 0.36)"
       },
       backgroundImage: {
         "hero-grid":
-          "linear-gradient(rgba(176, 141, 87, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(176, 141, 87, 0.08) 1px, transparent 1px)"
+          "rgba(200, 169, 107, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(200, 169, 107, 0.07) 1px, transparent 1px)"
       },
       fontFamily: {
         display: ["Sora", "sans-serif"],

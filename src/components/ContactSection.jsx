@@ -50,7 +50,7 @@ export default function ContactSection({ personal }) {
   return (
     <MotionSection id="contact" className="mx-auto max-w-7xl px-6 py-8 lg:px-8">
       <div className="glass-panel p-6 sm:p-8">
-        <SectionHeading eyebrow="Contact" title="Let's connect" description={personal.availability} />
+        <SectionHeading eyebrow="Contact" title={<span className="text-[color:var(--lux-gold)]">Let's connect</span>} description={personal.availability} />
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_1.4fr]">
 
@@ -131,7 +131,7 @@ export default function ContactSection({ personal }) {
 
                 <button
                   type="submit" disabled={status === "sending"}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[color:var(--lux-gold)] px-6 py-3 text-sm font-semibold text-[#16110c] shadow-glow transition hover:brightness-105 disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="lux-btn-primary disabled:opacity-60 disabled:cursor-not-allowed w-fit"
                 >
                   {status === "sending"
                     ? <><Loader size={15} className="animate-spin" /> Sending…</>
