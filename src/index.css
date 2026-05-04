@@ -278,3 +278,10 @@ body {
     @apply inline-flex h-3.5 w-3.5 rounded-full bg-accent-400 shadow-[0_0_0_8px_rgba(198,169,105,0.12)];
   }
 }
+
+/* Mermaid diagram centering */
+.mermaid-diagram svg {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+}

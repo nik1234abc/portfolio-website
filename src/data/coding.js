@@ -729,6 +729,68 @@ export const coding = {
         { question: "What happens if two elements have the same key?", answer: "toMap() throws IllegalStateException: 'Duplicate key'. Always provide a merge function (third argument) if duplicates are possible." }
       ],
       keyPoints: ["toMap(keyMapper, valueMapper)", "Throws on duplicate keys — provide merge function", "Merge function: (existing, replacement) -> which to keep", "Use LinkedHashMap::new to preserve insertion order"]
-    }
-  ]
+    },
+    {
+      id: 56,
+      category: "Coding Patterns",
+      topic: "Graphs",
+      difficulty: "Core",
+      question: "Number of islands",
+      simpleAnswer: "Treat each land cell as part of a graph. Scan the grid, and whenever you find unvisited land, run DFS/BFS to mark the whole island and increment the count.",
+      explanation: "This is a classic grid traversal problem. Each '1' cell connects to its up/down/left/right neighbors. The moment you discover a new unvisited land cell, you know you found a new island, so increment the answer and flood-fill from there to mark the whole connected component.",
+      example: "Use nested loops over the matrix. On grid[r][c] == '1', increment islands and DFS the four directions, marking visited cells so they are not counted again.",
+      followUps: [{ question: "Why is this considered a graph problem?", answer: "Because each cell is a node and adjacency defines edges, so the task is really counting connected components." }],
+      keyPoints: ["Grid traversal using DFS or BFS", "Count connected components", "Mark visited cells to avoid recounting", "O(rows * cols) time"]
+    },
+    {
+      id: 57,
+      category: "Coding Patterns",
+      topic: "Graphs",
+      difficulty: "Core",
+      question: "BFS vs DFS on graphs",
+      simpleAnswer: "BFS explores level by level using a queue. DFS goes deep first using recursion or a stack. BFS is often used for shortest path in unweighted graphs, while DFS is great for traversal and component-style exploration.",
+      explanation: "Both are foundational. BFS guarantees the shortest number of edges in an unweighted graph because it explores by distance layers. DFS is often simpler for cycle checks, connectivity, backtracking, and topological-style exploration. Interviewers usually care less about memorizing definitions and more about whether you can choose the right traversal for the problem.",
+      example: "Use BFS for 'minimum number of moves'. Use DFS for 'find all connected nodes' or 'does a path exist'. Both usually need a visited set for general graphs.",
+      followUps: [{ question: "Can DFS also find shortest path?", answer: "Not reliably in an unweighted graph without exploring too much; BFS is the standard shortest-path choice there." }],
+      keyPoints: ["BFS = queue, level order", "DFS = stack/recursion, deep exploration", "BFS for unweighted shortest path", "Visited tracking is usually required"]
+    },
+    {
+      id: 58,
+      category: "Coding Patterns",
+      topic: "Intervals",
+      difficulty: "Core",
+      question: "Merge intervals",
+      simpleAnswer: "Sort intervals by start time, then iterate and merge overlapping intervals by comparing the current interval with the last merged one.",
+      explanation: "Once intervals are sorted, overlapping intervals become neighbors. Maintain a result list. If the current interval overlaps the last one in the result, extend the last interval's end. Otherwise, add a new interval. This pattern appears often in scheduling and booking problems.",
+      example: "[[1,3],[2,6],[8,10],[15,18]] -> sort by start -> merge [1,3] and [2,6] into [1,6] -> final answer [[1,6],[8,10],[15,18]].",
+      followUps: [{ question: "What is the time complexity?", answer: "O(n log n) because sorting dominates. The merge scan itself is O(n)." }],
+      keyPoints: ["Sort by interval start", "Compare with last merged interval", "Extend end on overlap", "O(n log n) overall"]
+    },
+    {
+      id: 59,
+      category: "Coding Patterns",
+      topic: "Trie",
+      difficulty: "Intermediate",
+      question: "What is a Trie and when do you use it?",
+      simpleAnswer: "A Trie is a prefix tree used for efficient prefix lookups, word insert/search operations, and autocomplete-style problems.",
+      explanation: "Each edge represents a character and each path from root represents a prefix. Tries are powerful when the problem involves many string prefix operations, like checking whether a word exists, whether any word starts with a prefix, or generating suggestions. They trade memory for fast character-by-character lookups.",
+      example: "Insert 'cat', 'car', and 'dog'. Searching prefix 'ca' succeeds because both 'cat' and 'car' share the same branch from the root.",
+      followUps: [{ question: "Why not just use a HashSet of words?", answer: "A HashSet is great for exact lookup, but it does not naturally support efficient prefix traversal like a Trie does." }],
+      keyPoints: ["Prefix tree for strings", "Great for startsWith and autocomplete", "Exact search + prefix search", "Trades extra memory for structured lookup"]
+    },
+    {
+      id: 60,
+      category: "Coding Patterns",
+      topic: "Union-Find",
+      difficulty: "Intermediate",
+      question: "What is Union-Find (Disjoint Set Union)?",
+      simpleAnswer: "Union-Find is a data structure for tracking which elements belong to the same connected component, supporting fast union and find operations.",
+      explanation: "It is especially useful for dynamic connectivity problems: are these two nodes connected yet, and if not, connect them. Path compression and union by rank/size make the operations extremely fast in practice. It commonly appears in graph problems like connected components, cycle detection in undirected graphs, and Kruskal's MST.",
+      example: "In a friendship graph, union(A,B) means connect two people. Later, find(A) == find(C) tells you whether A and C are in the same friend group.",
+      followUps: [{ question: "When would you prefer Union-Find over DFS?", answer: "Prefer Union-Find when connectivity relationships are added incrementally and you need many repeated connectivity checks." }],
+      keyPoints: ["Tracks connected components", "Supports union() and find()", "Path compression + union by rank improve speed", "Common in graph connectivity problems"]
+    },  ]
 };
+
+
+

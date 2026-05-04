@@ -1,125 +1,140 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Brain, ChevronRight, Shuffle, Lightbulb, Target, AlertCircle, ArrowUp, Smartphone, Shield, Server, Lock, Zap, Briefcase, Radio, Database, HardDrive, ArrowLeftRight, Plus, Minus, ArrowDown, Webhook, FileCheck, Activity, ChevronDown, ChevronUp, Tag } from "lucide-react";
+import { Brain, ChevronRight, Shuffle, Lightbulb, Target, AlertCircle, ArrowUp, Tag } from "lucide-react";
 import { portfolio } from "../data/portfolio.js";
 import { coding } from "../data/coding.js";
 import QuizSection from "./QuizSection.jsx";
-import LifecycleDiagram from "./LifecycleDiagram.jsx";
+import LifecycleFlowsHub from "./LifecycleFlowsHub.jsx";
 
-const apiFlowSteps = [
-  { id: 1, title: "1. Client Request", icon: Smartphone, desc: "User triggers an action. A REST HTTP request is dispatched over the network, establishing a TCP/TLS connection and transmitting a JSON payload with necessary HTTP headers.", example: "POST /api/orders\n{\n  \"itemId\": 123\n}" },
-  { id: 2, title: "2. API Gateway & WAF", icon: Shield, desc: "Intercepts the request at the network edge. It performs SSL termination, enforces rate-limiting, applies WAF security rules against common exploits, and routes traffic internally.", example: "AWS API Gateway blocks the request if the user exceeds 100 requests/minute." },
-  { id: 3, title: "3. Load Balancer", icon: Server, desc: "Distributes incoming traffic across healthy microservice instances using algorithms like Round Robin, utilizing continuous health checks to avoid routing to failing nodes.", example: "AWS ALB routes your request to Server B because Server A currently has high CPU usage." },
-  { id: 4, title: "4. Auth & Security", icon: Lock, desc: "The request hits the Spring Security Filter Chain. The JWT token is intercepted, parsed, and cryptographically verified. Authorities are extracted into the SecurityContextHolder.", example: "Extracts 'Authorization: Bearer eyJhb...' and verifies the user has the 'ROLE_USER' authority." },
-  { id: 5, title: "5. Controller", icon: Webhook, desc: "The DispatcherServlet maps the URL to a specific @RestController. Spring's HttpMessageConverter (Jackson) automatically deserializes the JSON payload into a Java DTO.", example: "@PostMapping(\"/orders\")\npublic ResponseEntity<Order> createOrder(@RequestBody OrderDTO dto) { ... }" },
-  { id: 6, title: "6. Validation", icon: FileCheck, desc: "JSR-380 Bean Validation kicks in. If the DTO violates constraints, a MethodArgumentNotValidException is thrown, instantly returning a 400 Bad Request before wasting deeper resources.", example: "@NotNull on 'itemId' throws an exception immediately if the field is missing." },
-  { id: 7, title: "7. Service Layer", icon: Briefcase, desc: "The core business logic executes inside a @Service component. A database transaction is started via @Transactional, ensuring all data mutations succeed or fail together as a single atomic unit.", example: "Calculates final price, applies discounts, and prepares the order object." },
-  { id: 8, title: "8. Logging & Monitoring", icon: Activity, desc: "Trace IDs and Correlation IDs are added to the Mapped Diagnostic Context (MDC) for distributed tracing (ELK stack), while Actuator metrics track request latency.", example: "log.info(\"Processing order for user: {}\", userId);\nMetrics.counter(\"orders.created\").increment();" },
-  { id: 9, title: "9. Cache", icon: Zap, desc: "Before querying the primary database, the service checks an in-memory cache (like Redis). A cache hit returns data instantly, drastically reducing database load.", example: "Checks Redis cache for product availability before querying the primary database." },
-  { id: 10, title: "10. Kafka / Event Bus", icon: Radio, desc: "To keep the HTTP response fast, heavy secondary tasks (like sending emails or updating analytics) are pushed to an asynchronous message broker as fire-and-forget events.", example: "kafkaTemplate.send(\"order-events\", new OrderPlacedEvent(orderId));" },
-  { id: 11, title: "11. Repository Layer", icon: Database, desc: "Spring Data JPA abstracts the database interaction. The EntityManager manages the entity lifecycle, converting Java method calls into optimized SQL queries utilizing a HikariCP connection pool.", example: "orderRepository.save(order);\n// translates to 'INSERT INTO orders ...'" },
-  { id: 12, title: "12. Database Commit", icon: HardDrive, desc: "The database successfully writes data to disk. The ACID transaction commits, releasing row-level locks. If an unchecked exception occurred earlier, a rollback is triggered instead.", example: "PostgreSQL permanently writes the new order record to the disk." },
-  { id: 13, title: "13. HTTP Response", icon: ArrowLeftRight, desc: "The backend constructs a Response DTO, serializes it back into JSON, and attaches the appropriate HTTP status code. The payload traverses back through the network layers to the client.", example: "HTTP 201 Created\n{\n  \"orderId\": 456,\n  \"status\": \"SUCCESS\"\n}" }
-];
+// ── VS Comparison Table ───────────────────────────────────────────────────────
+function parseVsComparison(question, explanation, keyPoints) {
+  // Detect VS question by title
+  const vsMatch = question?.match(/^(.+?)\s+vs\.?\s+(.+?)(?:\s+vs\.?\s+(.+?))?(?:\s*[—–-].*)?$/i);
+  if (!vsMatch) return null;
 
-const RestApiFlow = ({ goBack }) => {
-  const [expandedId, setExpandedId] = useState(null);
+  // Extract the option names from the question title
+  const rawA = vsMatch[1]?.trim();
+  const rawB = vsMatch[2]?.trim().replace(/[?—–].*$/, "").trim();
+  const rawC = vsMatch[3]?.trim().replace(/[?—–].*$/, "").trim();
 
-  const toggleExpand = (id) => {
-    setExpandedId(prev => prev === id ? null : id);
-  };
+  // Must have at least 2 sides
+  if (!rawA || !rawB) return null;
+
+  const sides = rawC ? [rawA, rawB, rawC] : [rawA, rawB];
+  const rows = [];
+  const generalPoints = [];
+
+  // Parse keyPoints — each point should start with "SideName: ..."
+  if (keyPoints?.length) {
+    // Group keyPoints by which side they belong to
+    const grouped = {};
+    sides.forEach(s => { grouped[s] = []; });
+
+    keyPoints.forEach(kp => {
+      const matched = sides.find(s => {
+        const escaped = s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        return new RegExp(`^${escaped}[:\\s(]`, "i").test(kp);
+      });
+
+      if (matched) {
+        // Strip the side name and optional colon/dash from the beginning
+        const prefixRegex = new RegExp(`^${matched.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:\\s*\\([^)]*\\))?\\s*[:—–-]\\s*`, "i");
+        let text = kp.replace(prefixRegex, "").trim();
+
+        if (text) text = text.charAt(0).toUpperCase() + text.slice(1);
+        grouped[matched].push(text || kp);
+      } else {
+        generalPoints.push(kp);
+      }
+    });
+
+    // Build rows from grouped keyPoints
+    const maxRows = Math.max(...sides.map(s => grouped[s].length));
+    for (let i = 0; i < maxRows; i++) {
+      const row = {};
+      sides.forEach(s => { row[s] = grouped[s][i] || ""; });
+      rows.push(row);
+    }
+  }
+
+  // If we couldn't parse rows from keyPoints, fall back to null (render normally)
+  if (rows.length === 0) return null;
+
+  return { sides, rows, generalPoints };
+}
+
+function VsComparisonTable({ question, explanation, keyPoints }) {
+  const parsed = parseVsComparison(question, explanation, keyPoints);
+  if (!parsed) return null;
+
+  const { sides, rows, generalPoints } = parsed;
+  const colCount = sides.length;
+
+  // Color palette per column
+  const colors = [
+    {
+      header: "text-sky-300",
+      headerBg: "bg-sky-500/10",
+      dot: "bg-sky-400",
+    },
+    {
+      header: "text-amber-300",
+      headerBg: "bg-amber-500/10",
+      dot: "bg-amber-400",
+    },
+    {
+      header: "text-emerald-300",
+      headerBg: "bg-emerald-500/10",
+      dot: "bg-emerald-400",
+    },
+  ];
+
+      const gridColsClass = colCount === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2";
 
   return (
-    <div className="max-w-3xl mx-auto w-full pb-8 px-4 sm:px-6">
-      <button
-        onClick={goBack}
-        className="mb-8 flex items-center gap-2 text-sm font-semibold text-[color:var(--lux-muted)] hover:text-[color:var(--lux-gold)] transition-colors bg-panel px-4 py-2 rounded-full border border-[color:var(--lux-border)] hover:border-[color:var(--lux-gold)] w-max"
-      >
-        ← All Categories
-      </button>
-
-      <div className="text-center mb-10">
-        <h3 className="text-3xl md:text-4xl font-display font-bold theme-text mb-4">REST API Lifecycle</h3>
-        <p className="theme-muted max-w-2xl mx-auto text-sm sm:text-base">
-          A top-to-bottom architectural flow of an HTTP request. Click on any step to expand and see practical examples.
-        </p>
-      </div>
-
-      <div className="relative flex flex-col items-center">
-        {apiFlowSteps.map((step, idx) => (
-          <React.Fragment key={step.id}>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.4, delay: Math.min(idx * 0.1, 0.4) }}
-              className="w-full"
-            >
-              <div
-                onClick={() => toggleExpand(step.id)}
-                className={`glass-panel cursor-pointer border transition-all duration-300 relative z-10 flex flex-col overflow-hidden ${
-                  expandedId === step.id ? "border-accent-500 shadow-glow" : "border-[color:var(--lux-border)] hover:border-[color:var(--lux-border-strong)] hover:-translate-y-1"
-                }`}
-              >
-                {/* Collapsed Header */}
-                <div className="p-4 sm:p-6 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-[color:color-mix(in_srgb,var(--lux-gold)_10%,transparent)] text-accent-400 flex items-center justify-center shrink-0">
-                      <step.icon size={24} className="sm:w-6 sm:h-6" />
-                    </div>
-                    <h4 className="text-base sm:text-lg font-display font-bold theme-text">{step.title}</h4>
-                  </div>
-                  <div className={`shrink-0 transition-transform duration-300 ${expandedId === step.id ? 'text-accent-400 rotate-180' : 'text-gray-500'}`}>
-                    {expandedId === step.id ? <Minus size={20} /> : <Plus size={20} />}
-                  </div>
-                </div>
-
-                {/* Expanded Content */}
-                <AnimatePresence>
-                  {expandedId === step.id && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <div className="px-5 pb-5 pt-2 border-t border-[color:var(--lux-border)] mt-2">
-                        <p className="text-sm text-gray-300 leading-relaxed mb-4">
-                          {step.desc}
-                        </p>
-                        {step.example && (
-                          <div className="bg-ink/60 p-4 rounded-lg border border-[color:var(--lux-border)]">
-                            <span className="text-xs font-bold text-accent-500 uppercase tracking-wider mb-2 flex items-center gap-2">
-                              <Lightbulb size={12} /> Example
-                            </span>
-                            <code className="text-sm theme-muted font-mono whitespace-pre-wrap">{step.example}</code>
-                          </div>
-                        )}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+    <div className="mt-4 space-y-4">
+      <div className={`grid grid-cols-1 ${gridColsClass} gap-4`}>
+        {sides.map((side, si) => {
+          const c = colors[si % colors.length];
+          const sideRows = rows.map(r => r[side]).filter(Boolean);
+          return (
+            <div key={side} className="flex flex-col rounded-2xl border border-[color:var(--lux-border)] bg-[color:var(--lux-panel)] overflow-hidden transition-colors hover:border-[color:var(--lux-border-strong)]">
+              <div className={`px-5 py-3 border-b border-[color:var(--lux-border)] ${c.headerBg}`}>
+                <span className={`flex items-center gap-2 text-xs font-bold uppercase tracking-widest ${c.header}`}>
+                  <span className={`h-2 w-2 rounded-full ${c.dot} shrink-0`} />
+                  {side}
+                </span>
               </div>
-            </motion.div>
-
-            {/* Vertical Arrow Connector */}
-            {idx < apiFlowSteps.length - 1 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                className="flex flex-col items-center justify-center py-1 z-0"
-              >
-                <div className="w-0.5 h-8 bg-gradient-to-b from-gray-700 to-accent-500/50 rounded-full"></div>
-                <ArrowDown size={18} className="text-accent-500/80 -mt-1.5" />
-              </motion.div>
-            )}
-          </React.Fragment>
-        ))}
+              <div className="p-5 flex-1 bg-[color:color-mix(in_srgb,var(--lux-panel-strong)_20%,transparent)]">
+                <ul className="space-y-4">
+                  {sideRows.map((point, pi) => (
+                    <li key={pi} className="flex items-start gap-3 text-sm text-[color:var(--lux-text)] leading-relaxed">
+                      <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${c.dot}`} />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          );
+        })}
       </div>
+
+      {generalPoints && generalPoints.length > 0 && (
+        <div className="rounded-2xl border border-[color:var(--lux-border)] bg-[color:var(--lux-panel)] p-5">
+          <ul className="space-y-3">
+            {generalPoints.map((point, pi) => (
+              <li key={pi} className="flex items-start gap-3 text-sm text-[color:var(--lux-text)] leading-relaxed">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[color:var(--lux-gold)]" />
+                <span>{point}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
-};
+}
 
 // ── Lightweight code syntax highlighter ──────────────────────────────────────
 function CodeBlock({ code }) {
@@ -217,7 +232,7 @@ function GlobalSearch({ allQuestions, onSelect }) {
         <div className="absolute z-30 mt-2 w-full rounded-2xl border border-[color:var(--lux-border)] bg-[color:var(--lux-panel-strong)] shadow-[var(--lux-shadow-strong)] overflow-hidden">
           {results.map((q, i) => (
             <button
-              key={q.id}
+              key={getQuestionUid(q)}
               onMouseDown={() => handleSelect(q)}
               className={`w-full text-left px-4 py-3 flex items-start gap-3 transition hover:bg-[color:color-mix(in_srgb,var(--lux-gold)_6%,transparent)] ${i > 0 ? "border-t border-[color:var(--lux-border)]" : ""}`}
             >
@@ -240,6 +255,8 @@ function GlobalSearch({ allQuestions, onSelect }) {
   );
 }
 
+const getQuestionUid = (question) => question?.uid || `${question?.category}-${question?.id}`;
+
 const KnowledgeHub = () => {
   const { categories, questions } = portfolio.interviewHub;
 
@@ -254,8 +271,21 @@ const KnowledgeHub = () => {
     try { return JSON.parse(localStorage.getItem("kh_bookmarks") || "[]"); } catch { return []; }
   });
   const [showBookmarkedOnly, setShowBookmarkedOnly] = useState(false);
+  const [showAllBookmarks, setShowAllBookmarks]     = useState(false);
   const [seenIds, setSeenIds]   = useState(new Set());
   const [copied, setCopied]     = useState(false);
+
+  // ── Global difficulty filter ───────────────────────────────────────────────
+  const [difficultyFilter, setDifficultyFilter] = useState(() => {
+    try { return parseInt(localStorage.getItem("kh_difficulty") || "3", 10); } catch { return 3; }
+  });
+  const setDifficulty = (level) => {
+    setDifficultyFilter(level);
+    localStorage.setItem("kh_difficulty", String(level));
+    setCurrentIndex(0);
+    setIsRevealed(false);
+    setActiveFollowUp(null);
+  };
   const [streak]                = useState(() => {
     try {
       const s = JSON.parse(localStorage.getItem("kh_streak") || "{}");
@@ -268,45 +298,6 @@ const KnowledgeHub = () => {
     } catch { return 1; }
   });
 
-  // ── Last visited memory (opt-in) ──────────────────────────────────────────
-  const [rememberEnabled, setRememberEnabled] = useState(() => {
-    try { return localStorage.getItem("kh_remember") === "true"; } catch { return false; }
-  });
-
-  // Restore last visited on mount if enabled
-  useEffect(() => {
-    if (!rememberEnabled) return;
-    try {
-      const saved = JSON.parse(localStorage.getItem("kh_last") || "{}");
-      if (saved.category) {
-        setActiveCategory(saved.category);
-        if (saved.topic) setActiveTopic(saved.topic);
-        if (saved.index) setCurrentIndex(saved.index);
-      }
-    } catch {}
-  }, []); // eslint-disable-line
-
-  // Save current position whenever it changes
-  useEffect(() => {
-    if (!rememberEnabled || !activeCategory) return;
-    try {
-      localStorage.setItem("kh_last", JSON.stringify({
-        category: activeCategory,
-        topic: activeTopic,
-        index: currentIndex,
-      }));
-    } catch {}
-  }, [rememberEnabled, activeCategory, activeTopic, currentIndex]);
-
-  const toggleRemember = () => {
-    const next = !rememberEnabled;
-    setRememberEnabled(next);
-    localStorage.setItem("kh_remember", String(next));
-    if (!next) {
-      localStorage.removeItem("kh_last");
-    }
-  };
-
   const topicsRef    = useRef(null);
   const flashcardRef = useRef(null);
   const searchRef    = useRef(null);
@@ -314,6 +305,17 @@ const KnowledgeHub = () => {
 
   // Persist bookmarks
   useEffect(() => { localStorage.setItem("kh_bookmarks", JSON.stringify(bookmarks)); }, [bookmarks]);
+
+  // Prune stale UIDs once on mount (after allQuestions is ready)
+  useEffect(() => {
+    if (!allQuestions.length) return;
+    const validUids = new Set(allQuestions.map(q => getQuestionUid(q)));
+    setBookmarks(prev => {
+      const pruned = prev.filter(uid => validUids.has(uid));
+      return pruned.length === prev.length ? prev : pruned;
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // intentionally run once on mount
 
   const toggleBookmark = (id) =>
     setBookmarks(prev => prev.includes(id) ? prev.filter(b => b !== id) : [...prev, id]);
@@ -335,6 +337,7 @@ const KnowledgeHub = () => {
     setSearchQuery("");
     setShowBookmarkedOnly(false);
     setSeenIds(new Set());
+    setShowAllBookmarks(false);
     // Push a history entry so browser back closes the box instead of leaving the page
     history.pushState({ knowledgeHubCategory: category }, "");
   };
@@ -375,6 +378,7 @@ const KnowledgeHub = () => {
     setIsRevealed(false);
     setActiveFollowUp(null);
     setFocusedCardIdx(0);
+    setShowAllBookmarks(false);
     document.getElementById("interview-prep")?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -441,10 +445,8 @@ const KnowledgeHub = () => {
 
   // Data Processing
   const allQuestions = useMemo(() => {
-    const combined = [...questions];
-    let fallbackId = 1000;
-    
-    coding?.questions?.forEach((q) => combined.push(q));
+    const combined = questions.map((q) => ({ ...q, uid: getQuestionUid(q) }));
+    coding?.questions?.forEach((q) => combined.push({ ...q, uid: getQuestionUid(q) }));
     return combined;
   }, [questions]);
 
@@ -455,13 +457,13 @@ const KnowledgeHub = () => {
 
     return allCategoryNames.map((cat) => ({
       name: cat,
-      count: allQuestions.filter((q) => q.category === cat).length,
+      count: allQuestions.filter((q) => q.category === cat && (!q.difficulty || q.difficulty <= difficultyFilter)).length,
     }));
-  }, [categories, allQuestions]);
+  }, [categories, allQuestions, difficultyFilter]);
 
   const topicsForCategory = useMemo(() => {
     if (!activeCategory) return [];
-    const catQs = allQuestions.filter((q) => q.category === activeCategory);
+    const catQs = allQuestions.filter((q) => q.category === activeCategory && (!q.difficulty || q.difficulty <= difficultyFilter));
     // If a question doesn't have a topic yet (like Spring Boot), group it under "General Topics"
     const uniqueTopics = [...new Set(catQs.map((q) => q.topic || "General Topics"))];
     
@@ -475,7 +477,7 @@ const KnowledgeHub = () => {
         name: topic,
         count: catQs.filter((q) => (q.topic || "General Topics") === topic).length,
       }));
-  }, [activeCategory, allQuestions]);
+  }, [activeCategory, allQuestions, difficultyFilter]);
 
   const displayedQuestions = useMemo(() => {
     if (activeCategory) {
@@ -483,7 +485,9 @@ const KnowledgeHub = () => {
       if (activeTopic && activeTopic !== "ALL") {
         filtered = filtered.filter((q) => (q.topic || "General Topics") === activeTopic);
       }
-      if (showBookmarkedOnly) filtered = filtered.filter(q => bookmarks.includes(q.id));
+      // Apply global difficulty filter (cumulative: level N shows 1..N)
+      filtered = filtered.filter((q) => !q.difficulty || q.difficulty <= difficultyFilter);
+      if (showBookmarkedOnly) filtered = filtered.filter(q => bookmarks.includes(getQuestionUid(q)));
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         filtered = filtered.filter(q2 =>
@@ -494,7 +498,23 @@ const KnowledgeHub = () => {
       return filtered;
     }
     return [];
-  }, [activeCategory, activeTopic, allQuestions, showBookmarkedOnly, bookmarks, searchQuery]);
+  }, [activeCategory, activeTopic, allQuestions, showBookmarkedOnly, bookmarks, searchQuery, difficultyFilter]);
+
+  // Count bookmarks relevant to the current category + topic + difficulty (ignores search)
+  const visibleBookmarkCount = useMemo(() => {
+    if (!activeCategory) return 0;
+    return allQuestions.filter(q =>
+      q.category === activeCategory &&
+      (!q.difficulty || q.difficulty <= difficultyFilter) &&
+      (activeTopic && activeTopic !== "ALL" ? (q.topic || "General Topics") === activeTopic : true) &&
+      bookmarks.includes(getQuestionUid(q))
+    ).length;
+  }, [activeCategory, activeTopic, allQuestions, difficultyFilter, bookmarks]);
+
+  // All bookmarked questions across every category (for main-page bookmark view)
+  const allBookmarkedQuestions = useMemo(() =>
+    allQuestions.filter(q => bookmarks.includes(getQuestionUid(q))),
+  [allQuestions, bookmarks]);
 
   // Flashcard Actions
   const goToIndex = (idx) => {
@@ -505,7 +525,7 @@ const KnowledgeHub = () => {
   };
 
   const handleNext = () => {
-    setSeenIds(prev => new Set([...prev, displayedQuestions[currentIndex]?.id]));
+    setSeenIds(prev => new Set([...prev, getQuestionUid(displayedQuestions[currentIndex])]));
     goToIndex((currentIndex + 1) % displayedQuestions.length);
   };
 
@@ -518,7 +538,7 @@ const KnowledgeHub = () => {
     const currentQ = displayedQuestions[currentIndex];
     let randomIndex;
     do { randomIndex = Math.floor(Math.random() * displayedQuestions.length); }
-    while (displayedQuestions[randomIndex].id === currentQ?.id);
+    while (getQuestionUid(displayedQuestions[randomIndex]) === getQuestionUid(currentQ));
     goToIndex(randomIndex);
   };
 
@@ -537,7 +557,9 @@ const KnowledgeHub = () => {
       "Quick Quiz",
       "Lifecycle Flows",
     ];
-    const cols = window.innerWidth >= 768 ? 3 : 2;
+    let cols = 2;
+    if (window.innerWidth >= 1024) cols = 4;
+    else if (window.innerWidth >= 640) cols = 3;
     const total = allCards.length;
     const handler = (e) => {
       if (["INPUT", "TEXTAREA", "SELECT"].includes(e.target.tagName)) return;
@@ -553,13 +575,13 @@ const KnowledgeHub = () => {
 
   // Flashcard keyboard shortcuts
   useEffect(() => {
-    if (!activeCategory || activeCategory === "Quick Quiz" || activeCategory === "Application Flow") return;
+    if (!activeCategory || activeCategory === "Quick Quiz" || activeCategory === "Lifecycle Flows") return;
     const handler = (e) => {
       if (["INPUT","TEXTAREA","SELECT"].includes(e.target.tagName)) return;
       if (e.key === "ArrowRight") handleNext();
       if (e.key === "ArrowLeft")  handlePrev();
       if (e.key === " ") { e.preventDefault(); setIsRevealed(r => !r); }
-      if (e.key === "b" || e.key === "B") { if (activeQuestion) toggleBookmark(activeQuestion.id); }
+      if (e.key === "b" || e.key === "B") { if (activeQuestion) toggleBookmark(getQuestionUid(activeQuestion)); }
       if (e.key === "f" || e.key === "F") { e.preventDefault(); searchRef.current?.focus(); }
       if (e.key === "Backspace") goBack();
     };
@@ -567,9 +589,9 @@ const KnowledgeHub = () => {
     return () => window.removeEventListener("keydown", handler);
   }, [activeCategory, currentIndex, displayedQuestions, activeQuestion]);
 
-  // Backspace for special views (Lifecycle Flows)
+  // Backspace → back to hub from any special view (Lifecycle Flows, Quick Quiz)
   useEffect(() => {
-    if (activeCategory !== "Lifecycle Flows") return;
+    if (activeCategory !== "Lifecycle Flows" && activeCategory !== "Quick Quiz") return;
     const handler = (e) => {
       if (["INPUT","TEXTAREA","SELECT"].includes(e.target.tagName)) return;
       if (e.key === "Backspace") goBack();
@@ -578,13 +600,15 @@ const KnowledgeHub = () => {
     return () => window.removeEventListener("keydown", handler);
   }, [activeCategory]);
 
+
+
   // Related questions (same topic, different question)
   const relatedQuestions = useMemo(() => {
     if (!activeQuestion) return [];
     return allQuestions
       .filter(q => q.category === activeQuestion.category &&
                    q.topic === activeQuestion.topic &&
-                   q.id !== activeQuestion.id)
+                   getQuestionUid(q) !== getQuestionUid(activeQuestion))
       .slice(0, 3);
   }, [activeQuestion, allQuestions]);
 
@@ -605,45 +629,79 @@ const KnowledgeHub = () => {
       <div className="max-w-6xl mx-auto">
 
         {/* ── Header ── */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[color:var(--lux-border)] bg-[color:var(--lux-panel)] px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-[color:var(--lux-gold)] mb-5">
-            ✦ Interview Preparation
-          </div>
-          <h2 className="text-4xl md:text-5xl font-display font-bold theme-text mb-4">
+        <div className="text-center mb-6">
+          <h2 className="text-3xl md:text-4xl font-display font-bold theme-text mb-3">
             Knowledge <span className="text-accent-500">Hub</span>
           </h2>
-          <p className="theme-muted text-sm max-w-xl mx-auto leading-relaxed">
-            Flashcards, quizzes, and architecture flows — everything you need to ace your next backend interview.
-          </p>
-          {/* Remember toggle + streak */}
-          <div className="mt-4 inline-flex items-center gap-3">
-            <button
-              onClick={toggleRemember}
-              title={rememberEnabled ? "Session saved — click to turn off and clear" : "Save your current position"}
-              className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all duration-200 ${
-                rememberEnabled
-                  ? "border-[color:var(--lux-gold)] bg-[color:color-mix(in_srgb,var(--lux-gold)_12%,transparent)] text-[color:var(--lux-gold)]"
-                  : "border-[color:var(--lux-border)] bg-panel text-[color:var(--lux-muted)] hover:border-[color:var(--lux-gold)]"
-              }`}
-            >
-              <span>{rememberEnabled ? "🔖" : "📌"}</span>
-              {rememberEnabled ? "Session Saved" : "Save Session"}
-            </button>
-            {streak > 1 && (
-              <span className="text-xs font-semibold text-[color:var(--lux-gold)]">🔥 {streak} day streak</span>
-            )}
+
+          {/* ── Study Level selector ── */}
+          <div className="mb-4">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[color:var(--lux-muted)] mb-2">Select Study Level</p>
+            <div className="inline-flex items-stretch gap-2">
+              {[
+                {
+                  level: 1,
+                  label: "Beginner",
+                  icon: "🌱",
+                  sub: "Definitions & basics",
+                  color: "from-emerald-500/20 to-emerald-500/5 border-emerald-500/40 text-emerald-400",
+                  activeColor: "from-emerald-500/30 to-emerald-500/10 border-emerald-400 text-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.25)]",
+                },
+                {
+                  level: 2,
+                  label: "Intermediate",
+                  icon: "⚡",
+                  sub: "How things work",
+                  color: "from-amber-500/20 to-amber-500/5 border-amber-500/40 text-amber-400",
+                  activeColor: "from-amber-500/30 to-amber-500/10 border-amber-400 text-amber-300 shadow-[0_0_12px_rgba(251,191,36,0.25)]",
+                },
+                {
+                  level: 3,
+                  label: "Advanced",
+                  icon: "🔥",
+                  sub: "Edge cases & gotchas",
+                  color: "from-rose-500/20 to-rose-500/5 border-rose-500/40 text-rose-400",
+                  activeColor: "from-rose-500/30 to-rose-500/10 border-rose-400 text-rose-300 shadow-[0_0_12px_rgba(251,113,133,0.25)]",
+                },
+              ].map(({ level, label, icon, sub, color, activeColor }) => {
+                const isActive = difficultyFilter === level;
+                return (
+                  <button
+                    key={level}
+                    onClick={() => setDifficulty(level)}
+                    className={`relative flex flex-col items-center gap-0.5 rounded-xl border bg-gradient-to-b px-4 py-2.5 transition-all duration-200 hover:-translate-y-0.5 ${
+                      isActive ? activeColor : `${color} opacity-60 hover:opacity-90`
+                    }`}
+                  >
+                    <span className="text-base leading-none">{icon}</span>
+                    <span className="text-xs font-bold leading-tight">{label}</span>
+                    <span className="hidden sm:block text-[9px] opacity-70 leading-tight whitespace-nowrap">{sub}</span>
+                    {isActive && (
+                      <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-current opacity-80" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
+
+          {/* Streak */}
+          {streak > 1 && (
+            <div className="inline-flex items-center gap-1.5">
+              <span className="text-xs font-semibold text-[color:var(--lux-gold)]">🔥 {streak} day streak</span>
+            </div>
+          )}
         </div>
 
         {/* ── LEVEL 1: Category Grid ── */}
-        {!activeCategory && (
+        {!activeCategory && !showAllBookmarks && (
           <>
             {/* Global search */}
             <GlobalSearch allQuestions={allQuestions} onSelect={(q, cat) => {
               handleCategoryClick(cat);
               // after state settles, jump to the question index
               setTimeout(() => {
-                const idx = allQuestions.filter(x => x.category === cat).findIndex(x => x.id === q.id);
+                const idx = allQuestions.filter(x => x.category === cat).findIndex(x => getQuestionUid(x) === getQuestionUid(q));
                 if (idx >= 0) goToIndex(idx);
               }, 50);
             }} />
@@ -651,14 +709,14 @@ const KnowledgeHub = () => {
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
             {[
               ...categoryStats.map(cat => ({ ...cat, isSpecial: false })),
-              { name: "Quick Quiz",       count: null, sub: "MCQ + One Word",            icon: "⚡", isSpecial: true },
-              { name: "Lifecycle Flows",  count: null, sub: "6 Visual Step-by-Step Flows", icon: "🔄", isSpecial: true },
+              { name: "Quick Quiz",       count: null, sub: "MCQ + One Word",              icon: "⚡", isSpecial: true },
+              { name: "Lifecycle Flows",  count: null, sub: "6 Visual Step-by-Step Flows", icon: "🗺️", isSpecial: true },
             ].map((cat, idx) => {
               const icons = {
                 "Java": "☕", "Spring Boot": "🍃", "REST APIs": "🔗",
                 "Kafka": "📨", "Microservices": "🧩", "System Design": "🏗️",
                 "Coding Patterns": "💡", "SQL": "🗄️", "Infra & Cloud": "☁️",
-                "Quick Quiz": "⚡", "Application Flow": "🔀",
+                "Quick Quiz": "⚡", "Lifecycle Flows": "🗺️",
               };
               const icon = icons[cat.name] || "📚";
               const isFocused = focusedCardIdx === idx;
@@ -668,52 +726,120 @@ const KnowledgeHub = () => {
                   ref={el => cardRefs.current[idx] = el}
                   onClick={() => { setFocusedCardIdx(idx); handleCategoryClick(cat.name); }}
                   onMouseEnter={() => setFocusedCardIdx(idx)}
-                  className={`group relative cursor-pointer overflow-hidden rounded-2xl border bg-panel p-5 sm:p-7 flex flex-col justify-between gap-4 hover:border-[color:var(--lux-gold)] hover:shadow-glow transition-all duration-300 hover:-translate-y-1 ${
+                  className={`group relative cursor-pointer overflow-hidden rounded-xl border bg-panel p-4 flex flex-col justify-between gap-3 hover:border-[color:var(--lux-gold)] hover:shadow-glow transition-all duration-300 hover:-translate-y-1 ${
                     isFocused
                       ? "border-[color:var(--lux-gold)] shadow-glow -translate-y-1"
                       : "border-[color:var(--lux-border)]"
                   }`}
                 >
-                  {/* subtle gradient top-right accent */}
                   <div className="pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-[color:var(--lux-gold)] opacity-0 blur-2xl transition-opacity duration-300 group-hover:opacity-10" />
-
                   <div className="flex items-start justify-between gap-2">
                     <motion.span
-                      className="text-3xl leading-none inline-block"
+                      className="text-2xl leading-none inline-block"
                       whileHover={{ scale: 1.3, rotate: [0, -10, 10, -6, 6, 0], transition: { duration: 0.4 } }}
                     >{icon}</motion.span>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-[color:var(--lux-muted)] opacity-60 mt-1">
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-[color:var(--lux-muted)] opacity-60 mt-0.5">
                       {cat.isSpecial ? "Special" : "Q&A"}
                     </span>
                   </div>
-
                   <div>
-                    <h3 className="font-display text-lg sm:text-xl font-bold theme-text group-hover:text-[color:var(--lux-gold)] transition-colors leading-tight mb-1">
+                    <h3 className={`font-display text-sm sm:text-base font-bold transition-colors leading-tight mb-0.5 truncate ${cat.isSpecial ? "text-[color:var(--lux-gold)]" : "theme-text group-hover:text-[color:var(--lux-gold)]"}`}>
                       {cat.name}
                     </h3>
-                    <span className="text-xs text-[color:var(--lux-muted)]">
+                    <span className="text-[10px] text-[color:var(--lux-muted)] line-clamp-1">
                       {cat.isSpecial ? cat.sub : `${cat.count} questions`}
                     </span>
-                  </div>
-
-                  <div className="flex items-center gap-1 text-xs font-semibold text-[color:var(--lux-gold)] opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    Open <span className="text-base leading-none">→</span>
+                    {cat.isSpecial && (
+                      <p className="text-[10px] font-semibold text-[color:var(--lux-gold)] mt-2">Open →</p>
+                    )}
                   </div>
                 </div>
               );
             })}
           </div>
           <p className="text-center text-xs theme-muted mt-6 opacity-40">Arrow keys to navigate · Enter to open</p>
+
+            {/* ── All Bookmarks shortcut ── */}
+            {bookmarks.length > 0 && (
+              <div className="mt-6 flex justify-center">
+                <button
+                  onClick={() => setShowAllBookmarks(true)}
+                  className="flex items-center gap-2 rounded-full border border-[color:var(--lux-gold)] bg-[color:color-mix(in_srgb,var(--lux-gold)_8%,transparent)] px-5 py-2 text-xs font-semibold text-[color:var(--lux-gold)] hover:bg-[color:color-mix(in_srgb,var(--lux-gold)_16%,transparent)] transition-all"
+                >
+                  ★ All Bookmarks ({bookmarks.length})
+                </button>
+              </div>
+            )}
           </>
+        )}
+
+        {/* ── All Bookmarks View ── */}
+        {!activeCategory && showAllBookmarks && (
+          <div className="max-w-3xl mx-auto">
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-6">
+              <button
+                onClick={() => setShowAllBookmarks(false)}
+                className="flex items-center justify-center h-9 w-9 rounded-full border border-[color:var(--lux-border)] bg-panel text-[color:var(--lux-muted)] hover:border-[color:var(--lux-gold)] hover:text-[color:var(--lux-gold)] transition-colors"
+                aria-label="Back to categories"
+              >←</button>
+              <h3 className="font-display text-lg font-bold theme-text">
+                ★ Bookmarks <span className="text-[color:var(--lux-muted)] text-sm font-normal">({allBookmarkedQuestions.length})</span>
+              </h3>
+            </div>
+
+            {allBookmarkedQuestions.length === 0 ? (
+              <p className="text-center text-sm text-[color:var(--lux-muted)] py-16">No bookmarks yet. Press <kbd className="px-1.5 py-0.5 rounded border border-[color:var(--lux-border)] text-xs">B</kbd> on any flashcard to bookmark it.</p>
+            ) : (
+              <div className="flex flex-col gap-4">
+                {allBookmarkedQuestions.map((q) => {
+                  const uid = getQuestionUid(q);
+                  return (
+                    <div key={uid} className="rounded-xl border border-[color:var(--lux-border)] bg-panel p-4 hover:border-[color:var(--lux-gold)] transition-colors">
+                      {/* Category + topic badge */}
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border border-[color:var(--lux-border)] text-[color:var(--lux-muted)]">
+                            {q.category}
+                          </span>
+                          {q.topic && (
+                            <span className="text-[10px] text-[color:var(--lux-muted)] opacity-60">{q.topic}</span>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => toggleBookmark(uid)}
+                          title="Remove bookmark"
+                          className="text-[color:var(--lux-gold)] hover:opacity-60 transition text-sm leading-none"
+                        >★</button>
+                      </div>
+                      {/* Question */}
+                      <p className="text-sm font-semibold theme-text mb-2 leading-snug">{q.question}</p>
+                      {/* Answer */}
+                      {q.simpleAnswer && (
+                        <p className="text-xs text-[color:var(--lux-muted)] leading-relaxed line-clamp-3">{q.simpleAnswer}</p>
+                      )}
+                      {/* Jump to category */}
+                      <button
+                        onClick={() => handleCategoryClick(q.category)}
+                        className="mt-3 text-[10px] font-semibold text-[color:var(--lux-gold)] hover:underline transition"
+                      >
+                        Open in {q.category} →
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         )}
 
         {/* LEVEL 2: Content Rendering */}
         {activeCategory === "Quick Quiz" && (
-          <QuizSection onBack={goBack} />
+          <QuizSection onBack={goBack} difficultyFilter={difficultyFilter} />
         )}
 
         {activeCategory === "Lifecycle Flows" && (
-          <LifecycleDiagram onBack={goBack} />
+          <LifecycleFlowsHub onBack={goBack} />
         )}
 
         {activeCategory && activeCategory !== "Quick Quiz" && activeCategory !== "Lifecycle Flows" && (
@@ -739,10 +865,11 @@ const KnowledgeHub = () => {
                       const val = e.target.value;
                       if (val === "ALL") handleAllTopicsClick();
                       else handleTopicClick(val);
+                      e.target.blur();
                     }}
                     className="rounded-full border border-[color:var(--lux-border)] bg-[color:var(--lux-panel)] px-4 py-2 text-xs font-semibold text-[color:var(--lux-text)] outline-none cursor-pointer transition hover:border-[color:var(--lux-gold)] focus:border-[color:var(--lux-gold)]"
                   >
-                    <option value="ALL">All · {allQuestions.filter(q => q.category === activeCategory).length}</option>
+                    <option value="ALL">All · {allQuestions.filter(q => q.category === activeCategory && (!q.difficulty || q.difficulty <= difficultyFilter)).length}</option>
                     {topicsForCategory.map((topic) => (
                       <option key={topic.name} value={topic.name}>{topic.name} · {topic.count}</option>
                     ))}
@@ -781,7 +908,7 @@ const KnowledgeHub = () => {
                     : "border-[color:var(--lux-border)] bg-panel text-[color:var(--lux-muted)] hover:border-[color:var(--lux-gold)]"
                 }`}
               >
-                {showBookmarkedOnly ? "★" : "☆"} {bookmarks.length > 0 ? `Bookmarks (${bookmarks.length})` : "Bookmarks"}
+                {showBookmarkedOnly ? "★" : "☆"} {visibleBookmarkCount > 0 ? `Bookmarks (${visibleBookmarkCount})` : "Bookmarks"}
               </button>
 
               {/* Progress */}
@@ -844,15 +971,15 @@ const KnowledgeHub = () => {
                       <div className="flex items-center gap-2">
                         {/* Bookmark */}
                         <button
-                          onClick={() => toggleBookmark(activeQuestion.id)}
+                          onClick={() => toggleBookmark(getQuestionUid(activeQuestion))}
                           title="Bookmark (B)"
                           className={`rounded-full px-2.5 py-1.5 text-sm transition border ${
-                            bookmarks.includes(activeQuestion.id)
+                            bookmarks.includes(getQuestionUid(activeQuestion))
                               ? "border-[color:var(--lux-gold)] text-[color:var(--lux-gold)] bg-[color:color-mix(in_srgb,var(--lux-gold)_10%,transparent)]"
                               : "border-[color:var(--lux-border)] text-[color:var(--lux-muted)] hover:border-[color:var(--lux-gold)] hover:text-[color:var(--lux-gold)]"
                           }`}
                         >
-                          {bookmarks.includes(activeQuestion.id) ? "★" : "☆"}
+                          {bookmarks.includes(getQuestionUid(activeQuestion)) ? "★" : "☆"}
                         </button>
                         {/* Copy */}
                         <button
@@ -870,7 +997,7 @@ const KnowledgeHub = () => {
 
                     {/* ── Question ── */}
                     <motion.h3
-                      key={activeQuestion.id}
+                      key={getQuestionUid(activeQuestion)}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3 }}
@@ -878,6 +1005,21 @@ const KnowledgeHub = () => {
                     >
                       {activeQuestion.question}
                     </motion.h3>
+
+                    {activeQuestion.difficulty && (
+                      <div className="mt-4">
+                        <span className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${
+                          activeQuestion.difficulty === "Core"
+                            ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+                            : activeQuestion.difficulty === "Stretch"
+                            ? "border-amber-500/40 bg-amber-500/10 text-amber-300"
+                            : "border-sky-500/40 bg-sky-500/10 text-sky-300"
+                        }`}>
+                          <Tag size={11} />
+                          {activeQuestion.difficulty}
+                        </span>
+                      </div>
+                    )}
 
                     <AnimatePresence mode="wait">
                       {!isRevealed ? (
@@ -908,26 +1050,80 @@ const KnowledgeHub = () => {
                           <div className="rounded-2xl border border-[color:var(--lux-gold)]/25 bg-[color:color-mix(in_srgb,var(--lux-gold)_5%,transparent)] p-5">
                             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[color:var(--lux-gold)] mb-2">✦ Simple Answer</p>
                             <p className="text-base sm:text-lg leading-relaxed font-medium theme-text break-words">{activeQuestion.simpleAnswer}</p>
+                            {/* VS quick-glance badges */}
+                            {/\bvs\.?\b/i.test(activeQuestion.question) && (() => {
+                              const vsMatch = activeQuestion.question.match(/^(.+?)\s+vs\.?\s+(.+?)(?:\s+vs\.?\s+(.+?))?(?:\s*[—–?-].*)?$/i);
+                              if (!vsMatch) return null;
+                              const sides = [vsMatch[1], vsMatch[2], vsMatch[3]].filter(Boolean).map(s => s.trim().replace(/[?—–].*$/, "").trim());
+                              const dotColors = ["bg-sky-400", "bg-amber-400", "bg-emerald-400"];
+                              const textColors = ["text-sky-300", "text-amber-300", "text-emerald-300"];
+                              const borderColors = ["border-sky-500/40 bg-sky-500/10", "border-amber-500/40 bg-amber-500/10", "border-emerald-500/40 bg-emerald-500/10"];
+                              return (
+                                <div className="mt-3 flex flex-wrap gap-2">
+                                  {sides.map((s, i) => (
+                                    <span key={s} className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold ${borderColors[i % 3]} ${textColors[i % 3]}`}>
+                                      <span className={`h-2 w-2 rounded-full ${dotColors[i % 3]}`} />
+                                      {s}
+                                    </span>
+                                  ))}
+                                </div>
+                              );
+                            })()}
                           </div>
 
-                          {/* Explanation + Example side by side */}
+                          {/* Explanation + Analogy + Example */}
                           <div className="grid gap-4 md:grid-cols-2">
                             <div className="lux-subpanel min-w-0">
                               <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[color:var(--lux-muted)] mb-3">
                                 <Lightbulb size={13} /> Explanation
                               </p>
-                              <p className="text-sm leading-relaxed theme-muted break-words whitespace-pre-wrap">{activeQuestion.explanation}</p>
+                              {/* Split explanation into sentences — first sentence gets emphasis */}
+                              {(() => {
+                                const text = activeQuestion.explanation || "";
+                                const firstDot = text.search(/[.!?]\s/);
+                                const first = firstDot > 0 ? text.slice(0, firstDot + 1) : text;
+                                const rest  = firstDot > 0 ? text.slice(firstDot + 1).trim() : "";
+                                return (
+                                  <div className="text-sm leading-relaxed break-words whitespace-pre-wrap space-y-2">
+                                    <p className="text-[color:var(--lux-text)] font-medium">{first}</p>
+                                    {rest && <p className="theme-muted">{rest}</p>}
+                                  </div>
+                                );
+                              })()}
                             </div>
                             <div className="lux-subpanel flex flex-col min-w-0 overflow-hidden">
                               <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[color:var(--lux-muted)] mb-3 shrink-0">
                                 <Target size={13} /> Real-world Example
                               </p>
-                              <CodeBlock code={activeQuestion.example} />
+                              {/* Smart renderer: use CodeBlock only if example looks like code */}
+                              {(() => {
+                                const ex = activeQuestion.example || "";
+                                const looksLikeCode = /[{};@\n]|\/\/|=>|->|\bpublic\b|\bprivate\b|\bclass\b|\bimport\b|\bHTTP\s\d/.test(ex);
+                                return looksLikeCode
+                                  ? <CodeBlock code={ex} />
+                                  : <p className="text-sm leading-relaxed theme-muted break-words">{ex}</p>;
+                              })()}
                             </div>
                           </div>
 
+                          {/* Analogy block — only shown when present */}
+                          {activeQuestion.analogy && (
+                            <div className="rounded-2xl border border-purple-500/25 bg-gradient-to-br from-purple-500/8 to-purple-500/3 p-5">
+                              <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-purple-400 mb-3">
+                                <span>💡</span> Think of it like this
+                              </p>
+                              <p className="text-sm leading-relaxed text-[color:var(--lux-text)] italic">
+                                {activeQuestion.analogy}
+                              </p>
+                            </div>
+                          )}
+
                           {/* Follow-ups + Key Points */}
-                          <div className="grid gap-4 md:grid-cols-[1.2fr_0.8fr]">
+                          <div className={`grid gap-4 ${
+                            activeQuestion.followUps?.length > 0 && activeQuestion.keyPoints?.length > 0 && /\bvs\.?\b/i.test(activeQuestion.question)
+                              ? "grid-cols-1"
+                              : "md:grid-cols-[1.2fr_0.8fr]"
+                          }`}>
                             {activeQuestion.followUps?.length > 0 && (
                               <div className="lux-subpanel">
                                 <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[color:var(--lux-muted)] mb-3">
@@ -970,14 +1166,37 @@ const KnowledgeHub = () => {
                                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[color:var(--lux-muted)] mb-3">
                                   🔑 Key Points
                                 </p>
-                                <ul className="space-y-2">
-                                  {activeQuestion.keyPoints.map((kp, idx) => (
-                                    <li key={idx} className="flex items-start gap-2 text-sm leading-relaxed theme-muted">
-                                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[color:var(--lux-gold)]" />
-                                      {kp}
-                                    </li>
-                                  ))}
-                                </ul>
+                                {/* VS comparison table — shown when question is a VS question */}
+                                {(() => {
+                                  const isVs = /\bvs\.?\b/i.test(activeQuestion.question);
+                                  if (isVs) {
+                                    const parsed = parseVsComparison(
+                                      activeQuestion.question,
+                                      activeQuestion.explanation,
+                                      activeQuestion.keyPoints
+                                    );
+                                    if (parsed) {
+                                      return (
+                                        <VsComparisonTable
+                                          question={activeQuestion.question}
+                                          explanation={activeQuestion.explanation}
+                                          keyPoints={activeQuestion.keyPoints}
+                                        />
+                                      );
+                                    }
+                                  }
+                                  // Fallback: bullet list
+                                  return (
+                                    <ul className="space-y-2">
+                                      {activeQuestion.keyPoints.map((kp, idx) => (
+                                        <li key={idx} className="flex items-start gap-2 text-sm leading-relaxed theme-muted">
+                                          <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[color:var(--lux-gold)]" />
+                                          {kp}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  );
+                                })()}
                               </div>
                             )}
                           </div>
@@ -1023,15 +1242,15 @@ const KnowledgeHub = () => {
 
                     {/* ── Related questions ── */}
                     {isRevealed && relatedQuestions.length > 0 && (
-                      <div className="mt-6 border-t border-[color:var(--lux-border)] pt-5">
+                      <div className="mt-4 border-t border-[color:var(--lux-border)] pt-4">
                         <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[color:var(--lux-muted)] mb-3">
                           Related in this topic
                         </p>
                         <div className="flex flex-col gap-2">
                           {relatedQuestions.map((rq, i) => (
                             <button
-                              key={rq.id}
-                              onClick={() => goToIndex(displayedQuestions.findIndex(q => q.id === rq.id))}
+                                key={getQuestionUid(rq)}
+                                onClick={() => goToIndex(displayedQuestions.findIndex(q => getQuestionUid(q) === getQuestionUid(rq)))}
                               className="text-left text-xs text-[color:var(--lux-muted)] hover:text-[color:var(--lux-gold)] transition flex items-start gap-2"
                             >
                               <span className="shrink-0 text-[color:var(--lux-gold)] opacity-60">→</span>
